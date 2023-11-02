@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router();
+const apiController = require('../../controllers/apicontroller');
 
 router.get('/', (req, res) => {
     res.status(200).json(
@@ -8,5 +9,7 @@ router.get('/', (req, res) => {
         }
     );
 });
+
+router.post('/values', apiController.storeValue);
 
 module.exports = router;
