@@ -4,10 +4,10 @@ const mysql = require('mysql');
 
 // Replace these with your own database credentials
 const dbConfig = {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_SCHEMA
+    host: "silent-thunderstorm-production.cqrkuiaywydn.eu-north-1.rds.amazonaws.com",
+    user: "ProductionUser",
+    password: "6c4g5KTsLhjT75bvedYc",
+    database: "SilentThunderstorm"
 };
 
 const connection = mysql.createConnection(dbConfig);
