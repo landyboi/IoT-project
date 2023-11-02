@@ -9,3 +9,4 @@ sleep 2
 pm2 start index.js -i 2
 echo -e "\e[92m"
 echo "DEPLOYMENT COMPLETED"
+echo -e "\e[0m"
