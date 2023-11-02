@@ -11,5 +11,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/values', apiController.getValues);
+router.post('/values', apiController.storeValues);
+router.delete('/values', apiController.deleteValues);
 
 module.exports = router;
