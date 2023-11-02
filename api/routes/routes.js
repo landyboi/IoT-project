@@ -10,6 +10,6 @@ router.get('/', (req, res) => {
     );
 });
 
-router.post('/values', apiController.storeValue);
+router.get('/values', apiController.getValues);
 
 module.exports = router;
