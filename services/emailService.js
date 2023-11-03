@@ -1,6 +1,12 @@
 const email = require('@sendgrid/mail')
+const dotenv = require('dotenv');
+const path = require('path');
 
+
+const envFilePath = path.resolve(__dirname, '../.env');
+dotenv.config({ path: envFilePath });
 email.setApiKey(process.env.SENDGRID_API_KEY);
+
 
 async function sendEmail(to, subject, text) {
 

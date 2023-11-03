@@ -1,13 +1,19 @@
 // RUN THE SCRIPT BY RUNNING: node PrintAllTables.js
 
 const mysql = require('mysql');
+const dotenv = require('dotenv');
+const path = require('path');
+
+
+const envFilePath = path.resolve(__dirname, '../.env');
+dotenv.config({ path: envFilePath });
 
 // Replace these with your own database credentials
 const dbConfig = {
-    host: "silent-thunderstorm-production.cqrkuiaywydn.eu-north-1.rds.amazonaws.com",
-    user: "ProductionUser",
-    password: "6c4g5KTsLhjT75bvedYc",
-    database: "SilentThunderstorm"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_SCHEMA
 };
 
 const connection = mysql.createConnection(dbConfig);
