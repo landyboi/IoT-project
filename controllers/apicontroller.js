@@ -38,26 +38,21 @@ const deleteValues = async (req, res) => {
     const id = req.query.id;
     try {
         const measurement = await Measurements.findOne({ where: { id: id } });
-        console.log(measurement)
         measurement.deletedAt = Date.now();
         await measurement.save();
         const result = await Measurements.findOne({ where: { id: id } });
-        console.log(result);
-        /*
-        const searchResult = await Measurements.findOne({ where: { id: id } });
-        if (result !== 0 && !searchResult) {
+
+        if (result.deletedAt !== null) {
             res.status(200).json({
                 message: "Entry deleted successfully from the database!"
             });
         } else {
-            res.status(500).json({
+            res.status(400).json({
                 message: "Error deleting entry from database"
             });
         }
-         */
     } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({
+        res.status(400).json({
             message: "Faulty query parameters!"
         });
     }
