@@ -7,22 +7,23 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.DataTypes.INTEGER
       },
       temperature: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.DataTypes.FLOAT
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DataTypes.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DataTypes.DATE
       },
       deletedAt: {
         allowNull: true,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
         default: null
       }
     });
