@@ -1,4 +1,6 @@
 const { Measurements } = require('../models')
+const { Op } = require("sequelize");
+const moment = require("moment");
 
 const getValues = async (req, res) => {
     const measurements = await Measurements.findAll();
@@ -56,4 +58,61 @@ const deleteValues = async (req, res) => {
         });
     }
 }
-module.exports = {getValues, storeValues, deleteValues}
+
+const getLast30DaysValues = async (req, res) => {
+    try {
+        const date = moment().subtract(30, 'days').toDate();
+        const result = await Measurements.findAll( { where: { createdAt: { [Op.gte]: date } } } )
+        res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result
+            })
+    } catch (error) {
+        res.status(500).json({
+            message: "Error searching the database!"
+        });
+    }
+}
+
+const getLast60DaysValues = async (req, res) => {
+    try {
+        const date = moment().subtract(60, 'days').toDate();
+        const result = await Measurements.findAll( { where: { createdAt: { [Op.gte]: date } } } )
+        res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result
+            })
+    } catch (error) {
+        res.status(500).json({
+            message: "Error searching the database!"
+        });
+    }
+}
+
+const getLast120DaysValues = async (req, res) => {
+    try {
+        const date = moment().subtract(120, 'days').toDate();
+        const result = await Measurements.findAll( { where: { createdAt: { [Op.gte]: date } } } )
+        res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result
+            })
+    } catch (error) {
+        res.status(500).json({
+            message: "Error searching the database!"
+        });
+    }
+}
+
+
+module.exports = {
+    getValues,
+    storeValues,
+    deleteValues,
+    getLast30DaysValues,
+    getLast60DaysValues,
+    getLast120DaysValues
+}
