@@ -10,7 +10,8 @@ module.exports = {
           'humidity',
           {
               allowNull: false,
-              type: Sequelize.DataTypes.FLOAT
+              type: Sequelize.DataTypes.FLOAT,
+              after: 'temperature'
           },
           { transaction }
       );
@@ -19,7 +20,8 @@ module.exports = {
           'airpressure',
           {
               allowNull: false,
-              type: Sequelize.DataTypes.FLOAT
+              type: Sequelize.DataTypes.FLOAT,
+              after: 'humidity'
           },
           { transaction });
     } catch (err) {
