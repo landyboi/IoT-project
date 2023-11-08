@@ -18,5 +18,6 @@ router.get('/values/last30', apiController.getLast30DaysValues);
 router.get('/values/last60', apiController.getLast60DaysValues);
 router.get('/values/last120', apiController.getLast120DaysValues);
 
+router.get('/device/initialize', apiController.initializeDevice);
 
 module.exports = router;

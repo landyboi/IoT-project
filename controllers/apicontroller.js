@@ -1,4 +1,4 @@
-const { Measurements } = require('../models')
+const { Measurements, Devices } = require('../models')
 const { Op } = require("sequelize");
 const moment = require("moment");
 
@@ -108,6 +108,28 @@ const getLast120DaysValues = async (req, res) => {
     }
 }
 
+const initializeDevice = async (req, res) => {
+    const name = req.query.name;
+    try {
+        const newDevice = await Devices.create({ name: name });
+        const uuid = newDevice.uuid;
+
+        if (uuid) {
+            res.status(200).json({
+                message: "New device initialized successfully!",
+                data: uuid
+            });
+        } else {
+            res.status(400).json({
+                message: "Error initializing the device"
+            });
+        }
+    } catch (error) {
+        res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+}
 
 module.exports = {
     getValues,
@@ -115,5 +137,6 @@ module.exports = {
     deleteValues,
     getLast30DaysValues,
     getLast60DaysValues,
-    getLast120DaysValues
+    getLast120DaysValues,
+    initializeDevice
 }
