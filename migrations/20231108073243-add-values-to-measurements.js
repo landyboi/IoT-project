@@ -9,7 +9,8 @@ module.exports = {
           'Measurements',
           'humidity',
           {
-            type: Sequelize.float,
+              allowNull: false,
+              type: Sequelize.DataTypes.FLOAT
           },
           { transaction }
       );
@@ -17,7 +18,8 @@ module.exports = {
           'Measurements',
           'airpressure',
           {
-            type: Sequelize.float,
+              allowNull: false,
+              type: Sequelize.DataTypes.FLOAT
           },
           { transaction });
     } catch (err) {
@@ -27,11 +29,14 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
+      const transaction = await queryInterface.sequelize.transaction();
+      try {
+          await queryInterface.removeColumn('Measurements', 'humidity', { transaction });
+          await queryInterface.removeColumn('Measurements', 'airpressure', { transaction });
+          await transaction.commit();
+      } catch (err) {
+          await transaction.rollback();
+          throw err;
+      }
   }
 };
