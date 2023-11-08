@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 const moment = require("moment");
 
 const getValues = async (req, res) => {
-    const measurements = await Measurements.findAll();
+    const measurements = await Measurements.findAll( { where: { deletedAt: null }});
     res.status(200).json(
         {
             message: "Database search completed successfully!",
@@ -39,21 +39,22 @@ const storeValues = async (req, res) => {
 const deleteValues = async (req, res) => {
     const id = req.query.id;
     try {
-        const result = await Measurements.destroy( { where: { id: id } });
-        console.log(result)
-        const searchResult = await Measurements.findOne({ where: { id: id } });
-        if (result !== 0 && !searchResult) {
+        const measurement = await Measurements.findOne({ where: { id: id } });
+        measurement.deletedAt = Date.now();
+        await measurement.save();
+        const result = await Measurements.findOne({ where: { id: id } });
+
+        if (result.deletedAt !== null) {
             res.status(200).json({
                 message: "Entry deleted successfully from the database!"
             });
         } else {
-            res.status(500).json({
+            res.status(400).json({
                 message: "Error deleting entry from database"
             });
         }
     } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({
+        res.status(400).json({
             message: "Faulty query parameters!"
         });
     }

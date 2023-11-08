@@ -8,7 +8,7 @@ const basename = path.basename(__filename);
 
 const envFilePath = path.resolve(__dirname, '../.env');
 dotenv.config({ path: envFilePath });
-const env = process.env.NODE_ENV || 'production';
+const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
