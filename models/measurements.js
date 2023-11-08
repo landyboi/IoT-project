@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Measurements',
+    updatedAt: 'measuredAt'
   });
   return Measurements;
 };
