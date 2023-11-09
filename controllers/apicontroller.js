@@ -1,4 +1,4 @@
-const { Measurements } = require('../models')
+const { Measurements, Devices } = require('../models')
 const { Op } = require("sequelize");
 const moment = require("moment");
 
@@ -13,21 +13,29 @@ const getValues = async (req, res) => {
 
 const storeValues = async (req, res) => {
     const temp = req.query.temp;
+    const humidity = req.query.humidity;
+    const airpressure = req.query.airpressure;
+    const device = req.query.device;
+    const measured = req.query.measured;
     try {
-        const result = await Measurements.create({ temperature: temp });
-        const storedIdNumber = result.toJSON().id;
-        const savedResult = await Measurements.findOne({ where: { id: storedIdNumber } });
+        const measurementDevice = await Devices.findOne({ where: { uuid: device } });
 
-        if (savedResult) {
-            res.status(200).json({
-                message: "Data stored in the database successfully!",
-                data: savedResult
-            });
-        } else {
-            res.status(500).json({
-                message: "Error storing the data to the database"
-            });
+        if (!measurementDevice) {
+            new Error("Device not found");
         }
+
+        const result = await Measurements.create({
+            temperature: temp,
+            humidity: humidity,
+            airpressure: airpressure,
+            device: measurementDevice.id,
+            ...(measured && { measuredAt: measured })
+        });
+
+        res.status(200).json({
+            message: "Data stored in the database successfully!",
+            data: result
+        });
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({
