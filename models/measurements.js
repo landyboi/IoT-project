@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   Measurements.init({
     temperature: DataTypes.INTEGER,
+    humidity: DataTypes.FLOAT,
+    airpressure: DataTypes.FLOAT,
+    device: DataTypes.INTEGER,
     deletedAt: DataTypes.DATE
   }, {
     sequelize,
