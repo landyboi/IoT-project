@@ -15,7 +15,7 @@ module.exports = {
                         model: 'Devices',
                         key: 'id',
                     },
-                    after: 'humidity',
+                    after: 'airpressure',
                     onUpdate: 'CASCADE',
                     onDelete: 'CASCADE'
                 },
