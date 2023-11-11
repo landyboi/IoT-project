@@ -35,7 +35,7 @@ router.delete('/values', checkApiKey('client'), apiController.deleteValues);
 
 router.get('/values/last30', checkApiKey('client'), apiController.getLast30DaysValues);
 router.get('/values/last60', checkApiKey('client'), apiController.getLast60DaysValues);
-router.get('/values/last120',, checkApiKey('client'), apiController.getLast120DaysValues);
+router.get('/values/last120', checkApiKey('client'), apiController.getLast120DaysValues);
 
 router.get('/devices', checkApiKey('admin'), apiController.getDevices);
 
