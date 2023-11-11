@@ -38,5 +38,5 @@ router.get('/values/last60', checkApiKey('client'), apiController.getLast60DaysV
 router.get('/values/last120', checkApiKey('client'), apiController.getLast120DaysValues);
 
 router.get('/devices', checkApiKey('admin'), apiController.getDevices);
-
+router.patch('/devices/uuid', checkApiKey('admin'), apiController.changeDeviceUuid);
 module.exports = router;
