@@ -1,6 +1,7 @@
 const { Measurements, Devices } = require('../models')
 const { Op } = require("sequelize");
 const moment = require("moment");
+const uuidCreator = require("uuid");
 
 const getValues = async (req, res) => {
     const measurements = await Measurements.findAll( { where: { deletedAt: null }});
@@ -16,12 +17,18 @@ const storeValues = async (req, res) => {
     const humidity = req.query.humidity;
     const airpressure = req.query.airpressure;
     const device = req.query.device;
-    const measured = req.query.measured;
+
+    if (!temp || !humidity || !airpressure || !device) {
+        return res.status(400).json({
+            message: "Faulty query parameters!",
+        });
+    }
+
     try {
         const measurementDevice = await Devices.findOne({ where: { uuid: device } });
 
         if (!measurementDevice) {
-            new Error("Device not found");
+            throw new Error("Device not found");
         }
 
         const result = await Measurements.create({
@@ -29,7 +36,6 @@ const storeValues = async (req, res) => {
             humidity: humidity,
             airpressure: airpressure,
             device: measurementDevice.id,
-            ...(measured && { measuredAt: measured })
         });
 
         res.status(200).json({
@@ -37,9 +43,8 @@ const storeValues = async (req, res) => {
             data: result
         });
     } catch (error) {
-        console.error("Error:", error);
         res.status(500).json({
-            message: "Faulty query parameters!"
+            message: error.message || "Internal Server Error",
         });
     }
 }
@@ -62,7 +67,7 @@ const deleteValues = async (req, res) => {
             });
         }
     } catch (error) {
-        res.status(400).json({
+        res.status(500).json({
             message: "Faulty query parameters!"
         });
     }
@@ -116,6 +121,50 @@ const getLast120DaysValues = async (req, res) => {
     }
 }
 
+const getDevices = async (req, res) => {
+    const devices = await Devices.findAll( { where: { deletedAt: null }});
+    res.status(200).json(
+        {
+            message: "Database search completed successfully!",
+            data: devices
+        })
+}
+
+const changeDeviceUuid = async (req, res) => {
+    const id = req.query.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!",
+        });
+    }
+    try {
+        const device = await Devices.findByPk(id);
+        if (!device) {
+            throw new Error("Device not found");
+        }
+        const uuid = uuidCreator.v4();
+        device.uuid = uuid;
+        await device.save();
+
+        const result = await Devices.findOne({ where: { uuid: uuid } });
+
+        if (result) {
+            res.status(200).json({
+                message: "UUID changed successfully!",
+                data: result
+            });
+        } else {
+            res.status(500).json({
+                message: "Error changing the UUID!"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || "Internal Server Error",
+        });
+    }
+}
 
 module.exports = {
     getValues,
@@ -123,5 +172,7 @@ module.exports = {
     deleteValues,
     getLast30DaysValues,
     getLast60DaysValues,
-    getLast120DaysValues
+    getLast120DaysValues,
+    getDevices,
+    changeDeviceUuid
 }
