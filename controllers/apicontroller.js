@@ -116,6 +116,14 @@ const getLast120DaysValues = async (req, res) => {
     }
 }
 
+const getDevices = async (req, res) => {
+    const devices = await Devices.findAll( { where: { deletedAt: null }});
+    res.status(200).json(
+        {
+            message: "Database search completed successfully!",
+            data: devices
+        })
+}
 
 module.exports = {
     getValues,
@@ -123,5 +131,6 @@ module.exports = {
     deleteValues,
     getLast30DaysValues,
     getLast60DaysValues,
-    getLast120DaysValues
+    getLast120DaysValues,
+    getDevices
 }
