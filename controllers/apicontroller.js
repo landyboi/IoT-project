@@ -16,7 +16,6 @@ const storeValues = async (req, res) => {
     let temp, humidity, airpressure, device;
 
     if (req.query.temp && req.query.humidity && req.query.airpressure && req.query.device) {
-        console.log("FOUND URL")
         temp = req.query.temp;
         humidity = req.query.humidity;
         airpressure = req.query.airpressure;
