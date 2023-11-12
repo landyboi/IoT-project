@@ -42,18 +42,18 @@ const storeValues = async (req, res) => {
 
         const result = await Measurements.create({
             temperature: temp,
-            humidity,
-            airpressure,
+            humidity: humidity,
+            airpressure: airpressure,
             device: measurementDevice.id,
         });
 
         res.status(200).json({
             message: "Data stored in the database successfully!",
-            data: result,
+            data: result
         });
     } catch (error) {
         res.status(500).json({
-            message: error.message || "Internal Server Error",
+            message: error.message || "Internal Server Error"
         });
     }
 };
