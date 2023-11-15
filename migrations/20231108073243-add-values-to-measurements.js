@@ -9,7 +9,7 @@ module.exports = {
           'Measurements',
           'humidity',
           {
-              allowNull: false,
+              allowNull: true,
               type: Sequelize.DataTypes.FLOAT,
               after: 'temperature'
           },
@@ -19,7 +19,7 @@ module.exports = {
           'Measurements',
           'airpressure',
           {
-              allowNull: false,
+              allowNull: true,
               type: Sequelize.DataTypes.FLOAT,
               after: 'humidity'
           },
