@@ -13,19 +13,24 @@ const getValues = async (req, res) => {
 }
 
 const storeValues = async (req, res) => {
-    let temp, humidity, airpressure, device;
+    let temperature, humidity, airpressure, dewpoint, measuredAt, device;
 
-    if (req.query.temp && req.query.humidity && req.query.airpressure && req.query.device) {
-        temp = req.query.temp;
-        humidity = req.query.humidity;
-        airpressure = req.query.airpressure;
+    if (req.query.temperature && req.query.device) {
+        temperature = req.query.temperature;
         device = req.query.device;
-    }
-    else if (req.body && req.body.temp && req.body.humidity && req.body.airpressure && req.body.device) {
-        temp = req.body.temp;
-        humidity = req.body.humidity;
-        airpressure = req.body.airpressure;
-        device = req.body.device;
+
+        humidity = req.query.humidity || undefined;
+        airpressure = req.query.airpressure || undefined;
+        dewpoint = req.query.dewpoint || undefined;
+        measuredAt = req.query.measuredAt || undefined;
+    } else if (req.body.temperature && req.body.device) {
+        temperature = req.body.temperature;
+        device = req.body.device
+
+        humidity = req.body.humidity || undefined;
+        airpressure = req.body.airpressure || undefined;
+        dewpoint = req.body.dewpoint || undefined;
+        measuredAt = req.body.measuredAt || undefined;
     } else {
         return res.status(400).json({
             message: "Faulty parameters!"
@@ -40,10 +45,12 @@ const storeValues = async (req, res) => {
         }
 
         const result = await Measurements.create({
-            temperature: temp,
-            humidity: humidity,
-            airpressure: airpressure,
+            temperature: temperature,
             device: measurementDevice.id,
+            ...(humidity && { humidity: humidity }),
+            ...(airpressure && { airpressure: airpressure }),
+            ...(dewpoint && { dewpoint: dewpoint }),
+            ...(measuredAt && { measuredAt: measuredAt }),
         });
 
         res.status(200).json({
