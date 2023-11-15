@@ -10,11 +10,11 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       email: {
-        allownull: false,
+        allowNull: false,
         type: Sequelize.STRING
       },
       ip_address: {
-        allownull: false,
+        allowNull: false,
         type: Sequelize.VARCHAR(15)
       },
       device: {
@@ -22,7 +22,7 @@ module.exports = {
         allowNull: false,
         references: {
           model: 'Devices',
-          key: 'id',
+          key: 'id'
         },
         after: 'ip_address',
         onUpdate: 'CASCADE',
@@ -36,7 +36,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
-      deleteddAt: {
+      deletedAt: {
         allowNull: true,
         type: Sequelize.DATE,
         default: null
