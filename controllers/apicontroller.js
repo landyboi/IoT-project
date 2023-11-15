@@ -1,4 +1,4 @@
-const { Measurements, Devices } = require('../models')
+const { Measurements, Devices, Subscribers } = require('../models')
 const { Op } = require("sequelize");
 const moment = require("moment");
 const uuidCreator = require("uuid");
@@ -52,11 +52,16 @@ const storeValues = async (req, res) => {
             ...(dewpoint && { dewpoint: dewpoint }),
             ...(measuredAt && { measuredAt: measuredAt }),
         });
-
+        if (result) {
         res.status(200).json({
             message: "Data stored in the database successfully!",
             data: result
         });
+        } else {
+            res.status(500).json({
+                message: "Error storing the entry in the database!"
+            });
+        }
     } catch (error) {
         res.status(500).json({
             message: error.message || "Internal Server Error"
@@ -145,6 +150,28 @@ const getDevices = async (req, res) => {
         })
 }
 
+const initializeDevice = async (req, res) => {
+    const name = req.query.name;
+    try {
+        const newDevice = await Devices.create({ name: name, uuid: uuidCreator.v4() });
+
+        if (newDevice) {
+            res.status(200).json({
+                message: "New device initialized successfully!",
+                data: newDevice
+            });
+        } else {
+            res.status(500).json({
+                message: "Error initializing the device"
+            });
+        }
+    } catch (error) {
+        res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+}
+
 const changeDeviceUuid = async (req, res) => {
     const id = req.query.id;
 
@@ -181,6 +208,45 @@ const changeDeviceUuid = async (req, res) => {
     }
 }
 
+const subscribe = async (req, res) => {
+    const id = req.query.id;
+    const email = req.query.email;
+    if (!id || !email) {
+        return res.status(400).json({
+            message: "Faulty query parameters!",
+        });
+    }
+
+    try {
+        const device = await Devices.findByPk(id);
+        if (!device) {
+            throw new Error("Device not found");
+        }
+
+        const result = await Subscribers.create({
+            email: email,
+            ip_address: req.ip,
+            device: device.id,
+        })
+
+        if (result) {
+            res.status(200).json({
+                message: "New subscriber added successfully!",
+                data: result
+            });
+        } else {
+            res.status(500).json({
+                message: "Error subscribing!"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || "Internal Server Error",
+        });
+    }
+}
+
+
 module.exports = {
     getValues,
     storeValues,
@@ -189,5 +255,7 @@ module.exports = {
     getLast60DaysValues,
     getLast120DaysValues,
     getDevices,
-    changeDeviceUuid
+    initializeDevice,
+    changeDeviceUuid,
+    subscribe
 }
