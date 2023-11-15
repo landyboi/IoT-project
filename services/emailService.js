@@ -30,7 +30,7 @@ async function sendEmail(to, subject, text) {
 
     try {
         await email.send(message);
-        return true; // Email sent successfully
+        return true;
     } catch (error) {
         throw new Error(error);
     }
@@ -52,15 +52,13 @@ async function sendTemplateEmail(to, subject, templateId, data) {
         template_id: templateId,
         dynamic_template_data:
             {
-                "%TODAY%": "1.1.1990",
-                "first_name": "Tuomas",
-                "data": data.temperature
+                "TODAY": "TÄMÄ ON TESTI"
             }
     }
 
     try {
         await email.send(message);
-        return true; // Email sent successfully
+        return true;
     } catch (error) {
         throw new Error(error);
     }
