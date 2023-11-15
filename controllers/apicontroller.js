@@ -13,14 +13,22 @@ const getValues = async (req, res) => {
 }
 
 const storeValues = async (req, res) => {
-    const temp = req.query.temp;
-    const humidity = req.query.humidity;
-    const airpressure = req.query.airpressure;
-    const device = req.query.device;
+    let temp, humidity, airpressure, device;
 
-    if (!temp || !humidity || !airpressure || !device) {
+    if (req.query.temp && req.query.humidity && req.query.airpressure && req.query.device) {
+        temp = req.query.temp;
+        humidity = req.query.humidity;
+        airpressure = req.query.airpressure;
+        device = req.query.device;
+    }
+    else if (req.body && req.body.temp && req.body.humidity && req.body.airpressure && req.body.device) {
+        temp = req.body.temp;
+        humidity = req.body.humidity;
+        airpressure = req.body.airpressure;
+        device = req.body.device;
+    } else {
         return res.status(400).json({
-            message: "Faulty query parameters!",
+            message: "Faulty parameters!"
         });
     }
 
@@ -44,10 +52,10 @@ const storeValues = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({
-            message: error.message || "Internal Server Error",
+            message: error.message || "Internal Server Error"
         });
     }
-}
+};
 
 const deleteValues = async (req, res) => {
     const id = req.query.id;
