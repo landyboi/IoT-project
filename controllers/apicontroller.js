@@ -2,6 +2,19 @@ const { Measurements, Devices, Subscribers } = require('../models')
 const { Op } = require("sequelize");
 const moment = require("moment");
 const uuidCreator = require("uuid");
+const { EventEmitter } = require('events');
+const eventEmitter = new EventEmitter();
+const { sendWeatherEmail } = require("../services/eventService");
+
+// EVENTS HERE!
+//////////////////////////////////////////////////////////////////////////////////////
+eventEmitter.on('newMeasurement', async (data) => {
+    if (data.temperature <= -5) {
+        sendWeatherEmail(data);
+    }
+});
+//////////////////////////////////////////////////////////////////////////////////////
+
 
 const getValues = async (req, res) => {
     const measurements = await Measurements.findAll( { where: { deletedAt: null }});
@@ -53,10 +66,12 @@ const storeValues = async (req, res) => {
             ...(measuredAt && { measuredAt: measuredAt }),
         });
         if (result) {
-        res.status(200).json({
-            message: "Data stored in the database successfully!",
-            data: result
-        });
+            eventEmitter.emit('newMeasurement', { temperature, humidity, airpressure, dewpoint, measuredAt, device });
+
+            res.status(200).json({
+                message: "Data stored in the database successfully!",
+                data: result
+            });
         } else {
             res.status(500).json({
                 message: "Error storing the entry in the database!"
@@ -297,5 +312,6 @@ module.exports = {
     initializeDevice,
     changeDeviceUuid,
     subscribe,
-    unsubscribe
+    unsubscribe,
+    eventEmitter
 }
