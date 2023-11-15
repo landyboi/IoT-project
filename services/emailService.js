@@ -9,7 +9,6 @@ email.setApiKey(process.env.SENDGRID_API_KEY);
 
 
 async function sendEmail(to, subject, text) {
-
     if (typeof to !== 'string') {
         throw new Error('Invalid recipient email!')
     }
@@ -31,10 +30,39 @@ async function sendEmail(to, subject, text) {
 
     try {
         await email.send(message);
-        return true; // Email sent successfully
+        return true;
     } catch (error) {
         throw new Error(error);
     }
 }
 
-module.exports = { sendEmail }
+async function sendTemplateEmail(to, subject, templateId, data) {
+    if (typeof to !== 'string') {
+        throw new Error('Invalid recipient email!')
+    }
+
+    if (typeof subject !== 'string') {
+        throw new Error('Invalid subject!')
+    }
+
+    const message = {
+        to: to,
+        from: 'tuomas.mellin@metropolia.fi',
+        subject: subject,
+        template_id: templateId,
+        dynamic_template_data:
+            {
+                "TODAY": "TÄMÄ ON TESTI"
+            }
+    }
+
+    try {
+        await email.send(message);
+        return true;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+
+module.exports = { sendEmail, sendTemplateEmail }
