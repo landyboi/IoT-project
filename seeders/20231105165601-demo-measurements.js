@@ -10,7 +10,7 @@ module.exports = {
            airpressure: 1015,
            device: 1,
            createdAt: '2023-11-05 12:00:00',
-           measuredAt: '2023-11-05 12:00:00'
+           updatedAt: '2023-11-05 12:00:00'
          },
        {
          temperature: 15,
@@ -18,7 +18,8 @@ module.exports = {
          airpressure: 1020,
          device: 2,
          createdAt: '2023-08-13 13:52:00',
-         measuredAt: '2023-08-13 13:52:00'
+         updatedAt: '2023-08-13 13:52:00',
+         measuredAt: '2023-08-13 12:00:00'
        },
        {
          temperature: 30,
@@ -26,7 +27,8 @@ module.exports = {
          airpressure: 1012,
          device: 1,
          createdAt: '2023-07-01 06:25:00',
-         measuredAt: '2023-07-01 06:25:00'
+         updatedAt: '2023-07-01 06:25:00',
+         measuredAt: '2023-06-28 07:00:00'
        },
        {
          temperature: 20,
@@ -34,7 +36,7 @@ module.exports = {
          airpressure: 1018,
          device: 2,
          createdAt: '2022-06-05 03:14:00',
-         measuredAt: '2022-06-05 03:14:00'
+         updatedAt: '2022-06-05 03:14:00'
        },
        {
          temperature: 18,
@@ -42,7 +44,7 @@ module.exports = {
          airpressure: 1016,
          device: 1,
          createdAt: '2023-10-08 15:00:00',
-         measuredAt: '2023-10-08 15:00:00'
+         updatedAt: '2023-10-08 15:00:00'
        },
        {
          temperature: 28,
@@ -50,7 +52,7 @@ module.exports = {
          airpressure: 1010,
          device: 3,
          createdAt: '2023-10-10 15:32:00',
-         measuredAt: '2023-10-10 15:32:00',
+         updatedAt: '2023-10-10 15:32:00',
          deletedAt: '2023-10-15 12:00:00'
        }
       ], {});
