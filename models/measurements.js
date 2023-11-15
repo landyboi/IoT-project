@@ -17,12 +17,13 @@ module.exports = (sequelize, DataTypes) => {
     temperature: DataTypes.INTEGER,
     humidity: DataTypes.FLOAT,
     airpressure: DataTypes.FLOAT,
+    dewpoint: DataTypes.FLOAT,
     device: DataTypes.INTEGER,
+    measuredAt: DataTypes.DATE,
     deletedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Measurements',
-    updatedAt: 'measuredAt'
   });
   return Measurements;
 };
