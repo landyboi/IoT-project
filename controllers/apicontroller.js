@@ -152,8 +152,9 @@ const getDevices = async (req, res) => {
 
 const initializeDevice = async (req, res) => {
     const name = req.query.name;
+
     try {
-        const newDevice = await Devices.create({ name: name, uuid: uuidCreator.v4() });
+        const newDevice = await Devices.create({ name: name, uuid: uuidCreator.v4(),country: "FIN" });
 
         if (newDevice) {
             res.status(200).json({
@@ -209,24 +210,25 @@ const changeDeviceUuid = async (req, res) => {
 }
 
 const subscribe = async (req, res) => {
-    const id = req.query.id;
+    const device = req.query.device;
     const email = req.query.email;
-    if (!id || !email) {
+
+    if (!device || !email) {
         return res.status(400).json({
             message: "Faulty query parameters!",
         });
     }
 
     try {
-        const device = await Devices.findByPk(id);
-        if (!device) {
+        const deviceResult = await Devices.findByPk(device);
+        if (!deviceResult) {
             throw new Error("Device not found");
         }
 
         const result = await Subscribers.create({
             email: email,
-            ip_address: req.ip,
-            device: device.id,
+            ip_address: req.ip || req.socket.remoteAddress,
+            device: deviceResult.id,
         })
 
         if (result) {
@@ -246,6 +248,43 @@ const subscribe = async (req, res) => {
     }
 }
 
+const unsubscribe = async (req, res) => {
+    const id = req.query.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!",
+        });
+    }
+
+    try {
+        const subscriber = await Subscribers.findByPk(id);
+        if (!subscriber) {
+            throw new Error("Subscriber not found");
+        }
+
+        subscriber.deletedAt = Date.now();
+        await subscriber.save();
+
+        const result = await Subscribers.findByPk(id);
+
+        if (result.deletedAt !== null) {
+            res.status(200).json({
+                message: "Unsubscribed successfully!"
+            });
+        } else {
+            res.status(500).json({
+                message: "Error unsubscribing!"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || "Internal Server Error",
+        });
+    }
+
+}
+
 
 module.exports = {
     getValues,
@@ -257,5 +296,6 @@ module.exports = {
     getDevices,
     initializeDevice,
     changeDeviceUuid,
-    subscribe
+    subscribe,
+    unsubscribe
 }

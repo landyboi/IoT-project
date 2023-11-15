@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Subscribers.init({
     email: DataTypes.STRING,
-    ip_address: DataTypes.VARCHAR(15),
+    ip_address: DataTypes.CHAR(15),
     device: DataTypes.INTEGER,
     deletedAt: DataTypes.DATE
   }, {

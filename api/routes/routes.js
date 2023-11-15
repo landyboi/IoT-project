@@ -8,6 +8,12 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const checkApiKey = (type) => async (req, res, next) => {
     const apiKey = req.header('key');
 
+    if (!process.env.API_KEY_CLIENT || !process.env.API_KEY_ADMIN) {
+        return res.status(500).json({
+            message: 'API keys not set'
+        });
+    }
+
     if (apiKey === process.env.API_KEY_CLIENT && type === 'client') {
         return next();
     }
@@ -38,5 +44,10 @@ router.get('/values/last60', checkApiKey('client'), apiController.getLast60DaysV
 router.get('/values/last120', checkApiKey('client'), apiController.getLast120DaysValues);
 
 router.get('/devices', checkApiKey('admin'), apiController.getDevices);
+router.post('/devices/initialize', checkApiKey('client'), apiController.initializeDevice);
 router.patch('/devices/uuid', checkApiKey('admin'), apiController.changeDeviceUuid);
+
+router.post('/subscribe', checkApiKey('client'), apiController.subscribe);
+router.delete('/unsubscribe', checkApiKey('client'), apiController.unsubscribe);
+
 module.exports = router;
