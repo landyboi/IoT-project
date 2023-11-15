@@ -10,10 +10,10 @@ dotenv.config({ path: envFilePath });
 
 
 const dbConfig = {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_SCHEMA
+    host: process.env.PRODUCTION_HOST,
+    user: process.env.PRODUCTION_USERNAME,
+    password: process.env.PRODUCTION_PASSWORD,
+    database: process.env.PRODUCTION_DATABASE
 };
 
 const connection = mysql.createConnection(dbConfig);
