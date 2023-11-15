@@ -15,7 +15,7 @@ module.exports = {
       },
       ip_address: {
         allowNull: false,
-        type: Sequelize.VARCHAR(15)
+        type: Sequelize.CHAR(15)
       },
       device: {
         type: Sequelize.DataTypes.INTEGER,
@@ -24,7 +24,6 @@ module.exports = {
           model: 'Devices',
           key: 'id'
         },
-        after: 'ip_address',
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
