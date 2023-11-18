@@ -15,6 +15,12 @@ eventEmitter.on('newMeasurement', async (data) => {
 });
 //////////////////////////////////////////////////////////////////////////////////////
 
+const modifyTimezone = (timestamp) => {
+    const CET = moment.tz(timestamp, "Europe/Paris");
+    const UTC = CET.clone().tz("Europe/London");
+
+    return UTC.format();
+}
 
 const getValues = async (req, res) => {
     const measurements = await Measurements.findAll( { where: { deletedAt: null }});
@@ -54,7 +60,13 @@ const storeValues = async (req, res) => {
         const measurementDevice = await Devices.findOne({ where: { uuid: device } });
 
         if (!measurementDevice) {
-            throw new Error("Device not found");
+            return res.status(404).json({
+                message: "Device not found"
+            });
+        }
+
+        if (measuredAt) {
+            measuredAt = modifyTimezone(measuredAt);
         }
 
         const result = await Measurements.create({
