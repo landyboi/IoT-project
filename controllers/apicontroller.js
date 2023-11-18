@@ -9,6 +9,8 @@ const { sendWeatherEmail } = require("../services/eventService");
 // EVENTS HERE!
 //////////////////////////////////////////////////////////////////////////////////////
 eventEmitter.on('newMeasurement', async (data) => {
+    data = data.result.dataValues;
+
     if (data.temperature <= -5) {
         sendWeatherEmail(data);
     }
@@ -78,7 +80,7 @@ const storeValues = async (req, res) => {
             ...(measuredAt && { measuredAt: measuredAt }),
         });
         if (result) {
-            eventEmitter.emit('newMeasurement', { temperature, humidity, airpressure, dewpoint, measuredAt, device });
+            eventEmitter.emit('newMeasurement', {result});
 
             res.status(200).json({
                 message: "Data stored in the database successfully!",
