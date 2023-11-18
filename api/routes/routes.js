@@ -35,6 +35,7 @@ router.get('/', (req, res) => {
     );
 });
 
+// Measurements Routes here
 router.get('/values', checkApiKey('client'), apiController.getValues);
 router.post('/values', checkApiKey('client'), apiController.storeValues);
 router.delete('/values', checkApiKey('client'), apiController.deleteValues);
@@ -43,11 +44,18 @@ router.get('/values/last30', checkApiKey('client'), apiController.getLast30DaysV
 router.get('/values/last60', checkApiKey('client'), apiController.getLast60DaysValues);
 router.get('/values/last120', checkApiKey('client'), apiController.getLast120DaysValues);
 
+
+
+// Devices Routes here
 router.get('/devices', checkApiKey('admin'), apiController.getDevices);
 router.post('/devices/initialize', checkApiKey('client'), apiController.initializeDevice);
 router.patch('/devices/uuid', checkApiKey('admin'), apiController.changeDeviceUuid);
 
+
+
+// Subscriptions Routes here
 router.post('/subscribe', checkApiKey('client'), apiController.subscribe);
 router.delete('/unsubscribe', checkApiKey('client'), apiController.unsubscribe);
+
 
 module.exports = router;
