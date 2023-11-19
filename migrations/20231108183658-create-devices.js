@@ -11,12 +11,13 @@ module.exports = {
       },
       name: {
         type: Sequelize.DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
       country: {
         type: Sequelize.DataTypes.CHAR(3),
         allowNull: false,
-        default: 'FIN'
+        defaultValue: 'FIN'
       },
       uuid: {
         type: Sequelize.DataTypes.UUID,
@@ -34,7 +35,7 @@ module.exports = {
       deletedAt: {
         allowNull: true,
         type: Sequelize.DATE,
-        default: null
+        defaultValue: null
       }
     });
   },
