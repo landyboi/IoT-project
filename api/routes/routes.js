@@ -50,10 +50,12 @@ router.get('/values/last120', checkApiKey('client'), apiController.getLast120Day
 router.get('/devices', checkApiKey('admin'), apiController.getDevices);
 router.post('/devices/initialize', checkApiKey('client'), apiController.initializeDevice);
 router.patch('/devices/uuid', checkApiKey('admin'), apiController.changeDeviceUuid);
+router.delete('/devices', checkApiKey('admin'), apiController.deleteDevice);
 
 
 
 // Subscriptions Routes here
+router.get('/subscriptions', checkApiKey('admin'), apiController.getSubscriptions);
 router.post('/subscribe', checkApiKey('client'), apiController.subscribe);
 router.delete('/unsubscribe', checkApiKey('client'), apiController.unsubscribe);
 
