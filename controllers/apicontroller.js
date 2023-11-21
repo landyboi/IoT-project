@@ -29,11 +29,21 @@ const modifyTimezone = (timestamp) => {
 // Measurement Related Functions //
 const getValues = async (req, res) => {
     const measurements = await Measurements.findAll( { where: { deletedAt: null }});
-    res.status(200).json(
-        {
-            message: "Database search completed successfully!",
-            data: measurements
-        })
+    if (measurements.length === 0) {
+        return res.status(404).json({
+            message: "No subscribers found!"
+        });
+    } else if (measurements) {
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: measurements
+            })
+    } else {
+        return res.status(500).json({
+            message: "Error searching the database!"
+        });
+    }
 }
 
 const storeValues = async (req, res) => {
@@ -103,6 +113,12 @@ const storeValues = async (req, res) => {
 
 const deleteValues = async (req, res) => {
     const id = req.query.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!",
+        });
+    }
 
     try {
         const measurement = await Measurements.findByPk(id);
@@ -197,11 +213,21 @@ const getLast120DaysValues = async (req, res) => {
 // Device Related Functions //
 const getDevices = async (req, res) => {
     const devices = await Devices.findAll( { where: { deletedAt: null }});
-    res.status(200).json(
-        {
-            message: "Database search completed successfully!",
-            data: devices
-        })
+    if (devices.length === 0) {
+        return res.status(404).json({
+            message: "No devices found!"
+        });
+    } else if (devices) {
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: devices
+            })
+    } else {
+        return res.status(500).json({
+            message: "Error searching the database!"
+        });
+    }
 }
 
 const initializeDevice = async (req, res) => {
@@ -274,9 +300,65 @@ const changeDeviceUuid = async (req, res) => {
     }
 }
 
+const deleteDevice = async (req, res) => {
+    const id = req.query.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!",
+        });
+    }
+
+    try {
+        const device = await Devices.findByPk(id);
+
+        if (!device) {
+            return res.status(404).json({
+                message: "Device not found"
+            });
+        }
+
+        device.deletedAt = new Date();
+        await device.save();
+
+        if (device.deletedAt) {
+            return res.status(200).json({
+                message: "Device deleted successfully from the database!"
+            });
+        } else {
+            return res.status(500).json({
+                message: "Error deleting the device from the database"
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || "Internal Server Error"
+        });
+    }
+}
+
 
 
 // Subscriber Related Functions //
+const getSubscriptions = async (req, res) => {
+    const subscribers = await Subscribers.findAll( { where: { deletedAt: null }});
+    if (subscribers.length === 0) {
+        return res.status(404).json({
+            message: "No subscribers found!"
+        });
+    } else if (subscribers) {
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: subscribers
+            })
+    } else {
+        return res.status(500).json({
+            message: "Error searching the database!"
+        });
+    }
+}
+
 const subscribe = async (req, res) => {
     const device = req.query.device;
     const email = req.query.email;
@@ -366,6 +448,8 @@ module.exports = {
     getDevices,
     initializeDevice,
     changeDeviceUuid,
+    deleteDevice,
+    getSubscriptions,
     subscribe,
     unsubscribe,
     eventEmitter
