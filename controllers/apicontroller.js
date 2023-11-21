@@ -24,6 +24,9 @@ const modifyTimezone = (timestamp) => {
     return UTC.format();
 }
 
+
+
+// Measurement Related Functions //
 const getValues = async (req, res) => {
     const measurements = await Measurements.findAll( { where: { deletedAt: null }});
     res.status(200).json(
@@ -100,40 +103,51 @@ const storeValues = async (req, res) => {
 
 const deleteValues = async (req, res) => {
     const id = req.query.id;
+
     try {
         const measurement = await Measurements.findByPk(id);
-        measurement.deletedAt = Date.now();
-        await measurement.save();
-        const result = await Measurements.findByPk(id);
 
-        if (result.deletedAt !== null) {
-            res.status(200).json({
+        if (!measurement) {
+            return res.status(404).json({
+                message: "Measurement not found"
+            });
+        }
+
+        measurement.deletedAt = new Date();
+        await measurement.save();
+
+        if (measurement.deletedAt) {
+            return res.status(200).json({
                 message: "Entry deleted successfully from the database!"
             });
         } else {
-            res.status(500).json({
+            return res.status(500).json({
                 message: "Error deleting entry from database"
             });
         }
     } catch (error) {
-        res.status(400).json({
-            message: "Faulty query parameters!"
+        return res.status(500).json({
+            message: error.message || "Internal Server Error"
         });
     }
-}
+};
 
 const getLast30DaysValues = async (req, res) => {
     try {
         const date = moment().subtract(30, 'days').toDate();
-        const result = await Measurements.findAll( { where: { createdAt: { [Op.gte]: date } } } )
-        res.status(200).json(
-            {
-                message: "Database search completed successfully!",
-                data: result
-            })
+        const result = await Measurements.findAll({
+            where: { createdAt: { [Op.gte]: date } },
+            limit: 100,
+            order: [['createdAt', 'DESC']]
+        });
+
+        return res.status(200).json({
+            message: "Database search completed successfully!",
+            data: result
+        });
     } catch (error) {
-        res.status(500).json({
-            message: "Error searching the database!"
+        return res.status(500).json({
+            message: error.message || "Error searching the database!"
         });
     }
 }
@@ -141,15 +155,19 @@ const getLast30DaysValues = async (req, res) => {
 const getLast60DaysValues = async (req, res) => {
     try {
         const date = moment().subtract(60, 'days').toDate();
-        const result = await Measurements.findAll( { where: { createdAt: { [Op.gte]: date } } } )
-        res.status(200).json(
-            {
-                message: "Database search completed successfully!",
-                data: result
-            })
+        const result = await Measurements.findAll({
+            where: { createdAt: { [Op.gte]: date } },
+            limit: 100,
+            order: [['createdAt', 'DESC']]
+        });
+
+        return res.status(200).json({
+            message: "Database search completed successfully!",
+            data: result
+        });
     } catch (error) {
-        res.status(500).json({
-            message: "Error searching the database!"
+        return res.status(500).json({
+            message: error.message || "Error searching the database!"
         });
     }
 }
@@ -157,19 +175,26 @@ const getLast60DaysValues = async (req, res) => {
 const getLast120DaysValues = async (req, res) => {
     try {
         const date = moment().subtract(120, 'days').toDate();
-        const result = await Measurements.findAll( { where: { createdAt: { [Op.gte]: date } } } )
-        res.status(200).json(
-            {
-                message: "Database search completed successfully!",
-                data: result
-            })
+        const result = await Measurements.findAll({
+            where: { createdAt: { [Op.gte]: date } },
+            limit: 100,
+            order: [['createdAt', 'DESC']]
+        });
+
+        return res.status(200).json({
+            message: "Database search completed successfully!",
+            data: result
+        });
     } catch (error) {
-        res.status(500).json({
-            message: "Error searching the database!"
+        return res.status(500).json({
+            message: error.message || "Error searching the database!"
         });
     }
 }
 
+
+
+// Device Related Functions //
 const getDevices = async (req, res) => {
     const devices = await Devices.findAll( { where: { deletedAt: null }});
     res.status(200).json(
@@ -181,23 +206,30 @@ const getDevices = async (req, res) => {
 
 const initializeDevice = async (req, res) => {
     const name = req.query.name;
+    const country = req.query.country || "FIN";
+
+    if (!name || !country) {
+        return res.status(400).json({
+            message: "Faulty query parameters!",
+        });
+    }
 
     try {
-        const newDevice = await Devices.create({ name: name, uuid: uuidCreator.v4(),country: "FIN" });
+        const newDevice = await Devices.create({ name: name, uuid: uuidCreator.v4(), country: country });
 
         if (newDevice) {
-            res.status(200).json({
+            return res.status(200).json({
                 message: "New device initialized successfully!",
                 data: newDevice
             });
         } else {
-            res.status(500).json({
+            return res.status(500).json({
                 message: "Error initializing the device"
             });
         }
     } catch (error) {
-        res.status(400).json({
-            message: "Faulty query parameters!"
+        return res.status(500).json({
+            message: error.message || "Internal Server Error"
         });
     }
 }
@@ -210,11 +242,15 @@ const changeDeviceUuid = async (req, res) => {
             message: "Faulty query parameters!",
         });
     }
+
     try {
         const device = await Devices.findByPk(id);
         if (!device) {
-            throw new Error("Device not found");
+            return res.status(404).json({
+                message: "Device not found"
+            });
         }
+
         const uuid = uuidCreator.v4();
         device.uuid = uuid;
         await device.save();
@@ -238,6 +274,9 @@ const changeDeviceUuid = async (req, res) => {
     }
 }
 
+
+
+// Subscriber Related Functions //
 const subscribe = async (req, res) => {
     const device = req.query.device;
     const email = req.query.email;
@@ -251,7 +290,9 @@ const subscribe = async (req, res) => {
     try {
         const deviceResult = await Devices.findByPk(device);
         if (!deviceResult) {
-            throw new Error("Device not found");
+            return res.status(404).json({
+                message: "Device not found"
+            });
         }
 
         const result = await Subscribers.create({
@@ -267,7 +308,7 @@ const subscribe = async (req, res) => {
             });
         } else {
             res.status(500).json({
-                message: "Error subscribing!"
+                message: "Error subscribing, try again!"
             });
         }
     } catch (error) {
@@ -289,21 +330,21 @@ const unsubscribe = async (req, res) => {
     try {
         const subscriber = await Subscribers.findByPk(id);
         if (!subscriber) {
-            throw new Error("Subscriber not found");
+            return res.status(404).json({
+                message: "Subscriber not found"
+            });
         }
 
         subscriber.deletedAt = Date.now();
         await subscriber.save();
 
-        const result = await Subscribers.findByPk(id);
-
-        if (result.deletedAt !== null) {
+        if (subscriber.deletedAt) {
             res.status(200).json({
                 message: "Unsubscribed successfully!"
             });
         } else {
             res.status(500).json({
-                message: "Error unsubscribing!"
+                message: "Error unsubscribing, try again!"
             });
         }
     } catch (error) {
@@ -311,8 +352,8 @@ const unsubscribe = async (req, res) => {
             message: error.message || "Internal Server Error",
         });
     }
-
 }
+
 
 
 module.exports = {

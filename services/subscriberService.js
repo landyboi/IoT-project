@@ -1,6 +1,6 @@
 const { Subscribers } = require('../models')
 
-const getSubscribers = async (device) => {
+const getSubscribersForDevice = async (device) => {
     if (!device) {
         throw new Error("No device provided!")
     }
@@ -12,6 +12,13 @@ const getSubscribers = async (device) => {
     return subscriberEmails
 }
 
+const getAllSubscribers = async () => {
+    const subscribers = await Subscribers.findAll({ where: { deletedAt: null } });
+
+    return subscribers
+}
+
+
 module.exports = {
-    getSubscribers
+    getSubscribersForDevice
 }
