@@ -1,10 +1,10 @@
-const { Measurements, Devices, Subscribers } = require('../models')
+const { Measurements, Devices, Subscribers } = require('../../models')
 const { Op } = require("sequelize");
 const moment = require("moment");
 const uuidCreator = require("uuid");
 const { EventEmitter } = require('events');
 const eventEmitter = new EventEmitter();
-const { sendWeatherEmail } = require("../services/eventService");
+const { sendWeatherEmail } = require("../../services/eventService");
 
 // EVENTS HERE!
 //////////////////////////////////////////////////////////////////////////////////////
