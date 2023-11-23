@@ -1,10 +1,10 @@
-const { Measurements, Devices, Subscribers } = require('../../models')
-const { Op } = require("sequelize");
-const moment = require("moment");
+const { Devices, Subscribers } = require('../../models')
 const uuidCreator = require("uuid");
 const { EventEmitter } = require('events');
 const eventEmitter = new EventEmitter();
 const { sendWeatherEmail } = require("../../services/eventService");
+const measurementService = require("../services/measurementService");
+
 
 // EVENTS HERE!
 //////////////////////////////////////////////////////////////////////////////////////
@@ -17,36 +17,33 @@ eventEmitter.on('newMeasurement', async (data) => {
 });
 //////////////////////////////////////////////////////////////////////////////////////
 
-const modifyTimezone = (timestamp) => {
-    const CET = moment.tz(timestamp, "Europe/Paris");
-    const UTC = CET.clone().tz("Europe/London");
-
-    return UTC.format();
-}
-
 
 
 // Measurement Related Functions //
-const getValues = async (req, res) => {
-    const measurements = await Measurements.findAll( { where: { deletedAt: null }});
-    if (measurements.length === 0) {
-        return res.status(404).json({
-            message: "No subscribers found!"
-        });
-    } else if (measurements) {
+const getMeasurements = async (req, res) => {
+    try {
+        const result = await measurementService.getValues();
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message,
+            });
+        }
+
         return res.status(200).json(
             {
                 message: "Database search completed successfully!",
-                data: measurements
+                data: result.data
             })
-    } else {
+    } catch (error) {
         return res.status(500).json({
-            message: "Error searching the database!"
+            message: error.message || 'Internal Server Error',
         });
     }
-}
+};
 
-const storeValues = async (req, res) => {
+
+const storeMeasurement = async (req, res) => {
     let temperature, humidity, airpressure, dewpoint, measuredAt, device;
 
     if (req.query.temperature && req.query.device) {
@@ -72,46 +69,29 @@ const storeValues = async (req, res) => {
     }
 
     try {
-        const measurementDevice = await Devices.findOne({ where: { uuid: device } });
+        const result = await measurementService.storeValues(temperature, humidity, airpressure, dewpoint, measuredAt, device);
 
-        if (!measurementDevice) {
+        if (!result.success && result.message === 'Device not found!') {
             return res.status(404).json({
-                message: "Device not found"
+                message: result.message,
             });
         }
 
-        if (measuredAt) {
-            measuredAt = modifyTimezone(measuredAt);
-        }
+        eventEmitter.emit('newMeasurement', result);
 
-        const result = await Measurements.create({
-            temperature: temperature,
-            device: measurementDevice.id,
-            ...(humidity && { humidity: humidity }),
-            ...(airpressure && { airpressure: airpressure }),
-            ...(dewpoint && { dewpoint: dewpoint }),
-            ...(measuredAt && { measuredAt: measuredAt }),
+        return res.status(200).json({
+            message: "New measurement added successfully!",
+            data: result.data
         });
-        if (result) {
-            eventEmitter.emit('newMeasurement', {result});
-
-            res.status(200).json({
-                message: "Data stored in the database successfully!",
-                data: result
-            });
-        } else {
-            res.status(500).json({
-                message: "Error storing the entry in the database!"
-            });
-        }
     } catch (error) {
-        res.status(500).json({
-            message: error.message || "Internal Server Error"
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
         });
     }
 };
 
-const deleteValues = async (req, res) => {
+
+const deleteMeasurement = async (req, res) => {
     const id = req.query.id;
 
     if (!id) {
@@ -121,89 +101,89 @@ const deleteValues = async (req, res) => {
     }
 
     try {
-        const measurement = await Measurements.findByPk(id);
+        const result = await measurementService.deleteValues(id);
 
-        if (!measurement) {
+        if (!result.success) {
             return res.status(404).json({
-                message: "Measurement not found"
+                message: result.message,
             });
         }
 
-        measurement.deletedAt = new Date();
-        await measurement.save();
-
-        if (measurement.deletedAt) {
-            return res.status(200).json({
-                message: "Entry deleted successfully from the database!"
-            });
-        } else {
-            return res.status(500).json({
-                message: "Error deleting entry from database"
-            });
-        }
+        return res.status(200).json({
+            message: result.message,
+        });
     } catch (error) {
         return res.status(500).json({
-            message: error.message || "Internal Server Error"
+            message: error.message || 'Internal Server Error',
         });
     }
 };
 
-const getLast30DaysValues = async (req, res) => {
-    try {
-        const date = moment().subtract(30, 'days').toDate();
-        const result = await Measurements.findAll({
-            where: { createdAt: { [Op.gte]: date } },
-            limit: 100,
-            order: [['createdAt', 'DESC']]
-        });
 
-        return res.status(200).json({
-            message: "Database search completed successfully!",
-            data: result
-        });
+const getLast30DaysMeasurements = async (req, res) => {
+    try {
+        const result = await measurementService.getLast30DaysMeasurements();
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message,
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            })
     } catch (error) {
         return res.status(500).json({
-            message: error.message || "Error searching the database!"
+            message: error.message || 'Internal Server Error',
         });
     }
 }
 
-const getLast60DaysValues = async (req, res) => {
-    try {
-        const date = moment().subtract(60, 'days').toDate();
-        const result = await Measurements.findAll({
-            where: { createdAt: { [Op.gte]: date } },
-            limit: 100,
-            order: [['createdAt', 'DESC']]
-        });
 
-        return res.status(200).json({
-            message: "Database search completed successfully!",
-            data: result
-        });
+const getLast60DaysMeasurements = async (req, res) => {
+    try {
+        const result = await measurementService.getLast60DaysMeasurements();
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message,
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            })
     } catch (error) {
         return res.status(500).json({
-            message: error.message || "Error searching the database!"
+            message: error.message || 'Internal Server Error',
         });
     }
 }
 
-const getLast120DaysValues = async (req, res) => {
-    try {
-        const date = moment().subtract(120, 'days').toDate();
-        const result = await Measurements.findAll({
-            where: { createdAt: { [Op.gte]: date } },
-            limit: 100,
-            order: [['createdAt', 'DESC']]
-        });
 
-        return res.status(200).json({
-            message: "Database search completed successfully!",
-            data: result
-        });
+const getLast120DaysMeasurements = async (req, res) => {
+    try {
+        const result = await measurementService.getLast120DaysMeasurements();
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message,
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            })
     } catch (error) {
         return res.status(500).json({
-            message: error.message || "Error searching the database!"
+            message: error.message || 'Internal Server Error',
         });
     }
 }
@@ -439,12 +419,12 @@ const unsubscribe = async (req, res) => {
 
 
 module.exports = {
-    getValues,
-    storeValues,
-    deleteValues,
-    getLast30DaysValues,
-    getLast60DaysValues,
-    getLast120DaysValues,
+    getMeasurements,
+    storeMeasurement,
+    deleteMeasurement,
+    getLast30DaysMeasurements,
+    getLast60DaysMeasurements,
+    getLast120DaysMeasurements,
     getDevices,
     initializeDevice,
     changeDeviceUuid,
