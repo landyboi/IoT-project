@@ -10,7 +10,7 @@ const subscriberService = require("../services/subscriberService");
 // EVENTS HERE!
 //////////////////////////////////////////////////////////////////////////////////////
 eventEmitter.on('newMeasurement', async (data) => {
-    data = data.result.dataValues;
+    data = data.data.dataValues;
 
     if (data.temperature <= -5) {
         sendWeatherEmail(data);
@@ -23,7 +23,7 @@ eventEmitter.on('newMeasurement', async (data) => {
 // Measurement Related Functions //
 const getMeasurements = async (req, res) => {
     try {
-        const result = await measurementService.getValues();
+        const result = await measurementService.getMeasurements();
 
         if (!result.success) {
             return res.status(404).json({
@@ -70,7 +70,7 @@ const storeMeasurement = async (req, res) => {
     }
 
     try {
-        const result = await measurementService.storeValues(temperature, humidity, airpressure, dewpoint, measuredAt, device);
+        const result = await measurementService.storeMeasurement(temperature, humidity, airpressure, dewpoint, measuredAt, device);
 
         if (!result.success && result.message === 'Device not found!') {
             return res.status(404).json({
@@ -102,7 +102,7 @@ const deleteMeasurement = async (req, res) => {
     }
 
     try {
-        const result = await measurementService.deleteValues(id);
+        const result = await measurementService.deleteMeasurement(id);
 
         if (!result.success) {
             return res.status(404).json({

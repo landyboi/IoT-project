@@ -1,7 +1,7 @@
 const {Measurements, Devices} = require("../../models");
 const moment = require("moment/moment");
 const {Op} = require("sequelize");
-const { modifyTimezone } = require("/services/timezoneModifier");
+const { modifyTimezone } = require("../../services/timezoneModifier");
 
 
 const getMeasurements = async () => {
