@@ -354,7 +354,7 @@ const subscribe = async (req, res) => {
     }
 
     try {
-        const ip = req.ip || req.socket.remoteAddress;
+        const ip = req.headers['x-forwarded-for'] || undefined;
 
         const result = await subscriberService.subscribe(email, device, ip);
 
