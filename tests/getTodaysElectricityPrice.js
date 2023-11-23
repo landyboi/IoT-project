@@ -1,4 +1,4 @@
-const electricityService = require('../services/electricityPriceService');
+const electricityService = require('../services/electricityPriceFetcher');
 
 
 async function main() {

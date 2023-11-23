@@ -1,4 +1,4 @@
-const { getSubscribersForDevice } = require("./subscriberService");
+const { getSubscribersForDevice } = require("../api/services/subscriberService");
 const { sendTemplateEmail } = require("./emailService");
 
 const sendWeatherEmail = async (data) => {
