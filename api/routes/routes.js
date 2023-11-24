@@ -30,7 +30,7 @@ const checkApiKey = (type) => async (req, res, next) => {
 router.get('/', (req, res) => {
     res.status(200).json(
         {
-            message: 'Handling GET requests to API endpoint'
+            message: 'Welcome to SilentThunderstorm API :)'
         }
     );
 });
@@ -43,6 +43,10 @@ router.delete('/values', checkApiKey('client'), apiController.deleteMeasurement)
 router.get('/values/last30', checkApiKey('client'), apiController.getLast30DaysMeasurements);
 router.get('/values/last60', checkApiKey('client'), apiController.getLast60DaysMeasurements);
 router.get('/values/last120', checkApiKey('client'), apiController.getLast120DaysMeasurements);
+
+router.get('/values/:id', checkApiKey('client'), apiController.getMeasurementsByDevice);
+router.get('/values/:id/:date', checkApiKey('client'), apiController.getMeasurementsByDeviceFromDate);
+router.get('/values/:id/:startDate/:endDate', checkApiKey('client'), apiController.getMeasurementsByDeviceFromDateRange);
 
 
 
