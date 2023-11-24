@@ -16,6 +16,7 @@ const getDevices = async () => {
     }
 }
 
+
 const initializeDevice = async (name, country) => {
     try {
         const nameCheck = await Devices.findOne({ where: { name: name } } );
@@ -33,6 +34,7 @@ const initializeDevice = async (name, country) => {
         throw new Error('Error storing new device to the database!');
     }
 }
+
 
 const changeDeviceUuid = async (id) => {
     try {
@@ -58,6 +60,7 @@ const changeDeviceUuid = async (id) => {
     }
 }
 
+
 const deleteDevice = async (id) => {
     try {
         const device = await Devices.findByPk(id);
@@ -77,6 +80,8 @@ const deleteDevice = async (id) => {
         throw new Error('Error deleting device from the database!');
     }
 }
+
+
 
 module.exports = {
     getDevices,

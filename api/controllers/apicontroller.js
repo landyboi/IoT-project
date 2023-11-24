@@ -428,6 +428,7 @@ const getSubscriptions = async (req, res) => {
     }
 }
 
+
 const subscribe = async (req, res) => {
     const device = req.query.device;
     const email = req.query.email;
