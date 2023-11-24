@@ -1,15 +1,16 @@
-const { Devices, Subscribers } = require('../../models')
+const { Devices } = require('../../models')
 const uuidCreator = require("uuid");
 const { EventEmitter } = require('events');
 const eventEmitter = new EventEmitter();
 const { sendWeatherEmail } = require("../../services/eventService");
 const measurementService = require("../services/measurementService");
+const subscriberService = require("../services/subscriberService");
 
 
 // EVENTS HERE!
 //////////////////////////////////////////////////////////////////////////////////////
 eventEmitter.on('newMeasurement', async (data) => {
-    data = data.result.dataValues;
+    data = data.data.dataValues;
 
     if (data.temperature <= -5) {
         sendWeatherEmail(data);
@@ -22,7 +23,7 @@ eventEmitter.on('newMeasurement', async (data) => {
 // Measurement Related Functions //
 const getMeasurements = async (req, res) => {
     try {
-        const result = await measurementService.getValues();
+        const result = await measurementService.getMeasurements();
 
         if (!result.success) {
             return res.status(404).json({
@@ -69,7 +70,7 @@ const storeMeasurement = async (req, res) => {
     }
 
     try {
-        const result = await measurementService.storeValues(temperature, humidity, airpressure, dewpoint, measuredAt, device);
+        const result = await measurementService.storeMeasurement(temperature, humidity, airpressure, dewpoint, measuredAt, device);
 
         if (!result.success && result.message === 'Device not found!') {
             return res.status(404).json({
@@ -101,7 +102,7 @@ const deleteMeasurement = async (req, res) => {
     }
 
     try {
-        const result = await measurementService.deleteValues(id);
+        const result = await measurementService.deleteMeasurement(id);
 
         if (!result.success) {
             return res.status(404).json({
@@ -321,20 +322,23 @@ const deleteDevice = async (req, res) => {
 
 // Subscriber Related Functions //
 const getSubscriptions = async (req, res) => {
-    const subscribers = await Subscribers.findAll( { where: { deletedAt: null }});
-    if (subscribers.length === 0) {
-        return res.status(404).json({
-            message: "No subscribers found!"
-        });
-    } else if (subscribers) {
+    try {
+        const result = await subscriberService.getAllSubscribers();
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message,
+            });
+        }
+
         return res.status(200).json(
             {
                 message: "Database search completed successfully!",
-                data: subscribers
+                data: result.data
             })
-    } else {
+    } catch (error) {
         return res.status(500).json({
-            message: "Error searching the database!"
+            message: error.message || 'Internal Server Error',
         });
     }
 }
@@ -350,35 +354,27 @@ const subscribe = async (req, res) => {
     }
 
     try {
-        const deviceResult = await Devices.findByPk(device);
-        if (!deviceResult) {
+        const ip = req.headers['x-forwarded-for'] || undefined;
+
+        const result = await subscriberService.subscribe(email, device, ip);
+
+        if (!result.success) {
             return res.status(404).json({
-                message: "Device not found"
+                message: result.message,
             });
         }
 
-        const result = await Subscribers.create({
-            email: email,
-            ip_address: req.ip || req.socket.remoteAddress,
-            device: deviceResult.id,
-        })
-
-        if (result) {
-            res.status(200).json({
-                message: "New subscriber added successfully!",
-                data: result
-            });
-        } else {
-            res.status(500).json({
-                message: "Error subscribing, try again!"
-            });
-        }
+        return res.status(200).json({
+            message: "New subscriber added successfully!",
+            data: result.data
+        });
     } catch (error) {
-        res.status(500).json({
-            message: error.message || "Internal Server Error",
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
         });
     }
 }
+
 
 const unsubscribe = async (req, res) => {
     const id = req.query.id;
@@ -390,28 +386,20 @@ const unsubscribe = async (req, res) => {
     }
 
     try {
-        const subscriber = await Subscribers.findByPk(id);
-        if (!subscriber) {
+        const result = await subscriberService.unsubscribe(id);
+
+        if (!result.success) {
             return res.status(404).json({
-                message: "Subscriber not found"
+                message: result.message,
             });
         }
 
-        subscriber.deletedAt = Date.now();
-        await subscriber.save();
-
-        if (subscriber.deletedAt) {
-            res.status(200).json({
-                message: "Unsubscribed successfully!"
-            });
-        } else {
-            res.status(500).json({
-                message: "Error unsubscribing, try again!"
-            });
-        }
+        return res.status(200).json({
+            message: result.message,
+        });
     } catch (error) {
-        res.status(500).json({
-            message: error.message || "Internal Server Error",
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
         });
     }
 }

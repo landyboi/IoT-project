@@ -36,13 +36,13 @@ router.get('/', (req, res) => {
 });
 
 // Measurements Routes here
-router.get('/values', checkApiKey('client'), apiController.getValues);
-router.post('/values', checkApiKey('client'), apiController.storeValues);
-router.delete('/values', checkApiKey('client'), apiController.deleteValues);
+router.get('/values', checkApiKey('client'), apiController.getMeasurements);
+router.post('/values', checkApiKey('client'), apiController.storeMeasurement);
+router.delete('/values', checkApiKey('client'), apiController.deleteMeasurement);
 
-router.get('/values/last30', checkApiKey('client'), apiController.getLast30DaysValues);
-router.get('/values/last60', checkApiKey('client'), apiController.getLast60DaysValues);
-router.get('/values/last120', checkApiKey('client'), apiController.getLast120DaysValues);
+router.get('/values/last30', checkApiKey('client'), apiController.getLast30DaysMeasurements);
+router.get('/values/last60', checkApiKey('client'), apiController.getLast60DaysMeasurements);
+router.get('/values/last120', checkApiKey('client'), apiController.getLast120DaysMeasurements);
 
 
 
