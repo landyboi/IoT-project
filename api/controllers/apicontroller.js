@@ -1,11 +1,9 @@
-const { Devices } = require('../../models')
-const uuidCreator = require("uuid");
 const { EventEmitter } = require('events');
 const eventEmitter = new EventEmitter();
 const { sendWeatherEmail } = require("../../services/eventService");
 const measurementService = require("../services/measurementService");
 const subscriberService = require("../services/subscriberService");
-
+const deviceService = require("../services/deviceService");
 
 // EVENTS HERE!
 //////////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +25,7 @@ const getMeasurements = async (req, res) => {
 
         if (!result.success) {
             return res.status(404).json({
-                message: result.message,
+                message: result.message
             });
         }
 
@@ -38,7 +36,7 @@ const getMeasurements = async (req, res) => {
             })
     } catch (error) {
         return res.status(500).json({
-            message: error.message || 'Internal Server Error',
+            message: error.message || 'Internal Server Error'
         });
     }
 };
@@ -65,7 +63,7 @@ const storeMeasurement = async (req, res) => {
         measuredAt = req.body.measuredAt || undefined;
     } else {
         return res.status(400).json({
-            message: "Faulty parameters!"
+            message: "Faulty query parameters!"
         });
     }
 
@@ -74,7 +72,7 @@ const storeMeasurement = async (req, res) => {
 
         if (!result.success && result.message === 'Device not found!') {
             return res.status(404).json({
-                message: result.message,
+                message: result.message
             });
         }
 
@@ -86,7 +84,7 @@ const storeMeasurement = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({
-            message: error.message || 'Internal Server Error',
+            message: error.message || 'Internal Server Error'
         });
     }
 };
@@ -97,7 +95,7 @@ const deleteMeasurement = async (req, res) => {
 
     if (!id) {
         return res.status(400).json({
-            message: "Faulty query parameters!",
+            message: "Faulty query parameters!"
         });
     }
 
@@ -106,16 +104,16 @@ const deleteMeasurement = async (req, res) => {
 
         if (!result.success) {
             return res.status(404).json({
-                message: result.message,
+                message: result.message
             });
         }
 
         return res.status(200).json({
-            message: result.message,
+            message: result.message
         });
     } catch (error) {
         return res.status(500).json({
-            message: error.message || 'Internal Server Error',
+            message: error.message || 'Internal Server Error'
         });
     }
 };
@@ -127,7 +125,7 @@ const getLast30DaysMeasurements = async (req, res) => {
 
         if (!result.success) {
             return res.status(404).json({
-                message: result.message,
+                message: result.message
             });
         }
 
@@ -138,7 +136,7 @@ const getLast30DaysMeasurements = async (req, res) => {
             })
     } catch (error) {
         return res.status(500).json({
-            message: error.message || 'Internal Server Error',
+            message: error.message || 'Internal Server Error'
         });
     }
 }
@@ -150,7 +148,7 @@ const getLast60DaysMeasurements = async (req, res) => {
 
         if (!result.success) {
             return res.status(404).json({
-                message: result.message,
+                message: result.message
             });
         }
 
@@ -161,7 +159,7 @@ const getLast60DaysMeasurements = async (req, res) => {
             })
     } catch (error) {
         return res.status(500).json({
-            message: error.message || 'Internal Server Error',
+            message: error.message || 'Internal Server Error'
         });
     }
 }
@@ -173,7 +171,7 @@ const getLast120DaysMeasurements = async (req, res) => {
 
         if (!result.success) {
             return res.status(404).json({
-                message: result.message,
+                message: result.message
             });
         }
 
@@ -184,7 +182,103 @@ const getLast120DaysMeasurements = async (req, res) => {
             })
     } catch (error) {
         return res.status(500).json({
-            message: error.message || 'Internal Server Error',
+            message: error.message || 'Internal Server Error'
+        });
+    }
+}
+
+
+const getMeasurementsByDevice = async (req, res) => {
+    const id = req.params.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+
+    try {
+        const result = await measurementService.getMeasurementsByDevice(id)
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
+        });
+    }
+}
+
+
+const getMeasurementsByDeviceFromDate = async (req, res) => {
+    const id = req.params.id;
+    const date = req.params.date;
+
+    if (!id || !date) {
+        return res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+
+    try {
+        const result = await measurementService.getMeasurementsByDeviceFromDate(id, date);
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
+        });
+    }
+}
+
+
+const getMeasurementsByDeviceFromDateRange = async (req, res) => {
+    const id = req.params.id;
+    const startDate = req.params.startDate;
+    const endDate = req.params.endDate;
+
+    if (!id || !startDate || !endDate) {
+        return res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+
+    try {
+        const result = await measurementService.getMeasurementsByDeviceFromDateRange(id, startDate, endDate);
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
         });
     }
 }
@@ -193,127 +287,118 @@ const getLast120DaysMeasurements = async (req, res) => {
 
 // Device Related Functions //
 const getDevices = async (req, res) => {
-    const devices = await Devices.findAll( { where: { deletedAt: null }});
-    if (devices.length === 0) {
-        return res.status(404).json({
-            message: "No devices found!"
-        });
-    } else if (devices) {
+    try {
+        const result = await deviceService.getDevices();
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
         return res.status(200).json(
             {
                 message: "Database search completed successfully!",
-                data: devices
+                data: result.data
             })
-    } else {
+    } catch (error) {
         return res.status(500).json({
-            message: "Error searching the database!"
+            message: error.message || 'Internal Server Error'
         });
     }
 }
 
+
 const initializeDevice = async (req, res) => {
     const name = req.query.name;
-    const country = req.query.country || "FIN";
+    const country = req.query.country || 'FIN';
 
     if (!name || !country) {
         return res.status(400).json({
-            message: "Faulty query parameters!",
+            message: "Faulty query parameters!"
         });
     }
 
     try {
-        const newDevice = await Devices.create({ name: name, uuid: uuidCreator.v4(), country: country });
+        const result = await deviceService.initializeDevice(name, country);
 
-        if (newDevice) {
-            return res.status(200).json({
-                message: "New device initialized successfully!",
-                data: newDevice
-            });
-        } else {
-            return res.status(500).json({
-                message: "Error initializing the device"
+        if (!result.success) {
+            if (result.message === 'Name already in use!') {
+                return res.status(500).json({
+                    message: result.message
+                })
+            }
+            return res.status(404).json({
+                message: result.message
             });
         }
+
+        return res.status(200).json({
+            message: "New device added successfully!",
+            data: result.data
+        });
     } catch (error) {
         return res.status(500).json({
-            message: error.message || "Internal Server Error"
+            message: error.message || 'Internal Server Error'
         });
     }
 }
+
 
 const changeDeviceUuid = async (req, res) => {
     const id = req.query.id;
 
     if (!id) {
         return res.status(400).json({
-            message: "Faulty query parameters!",
+            message: "Faulty query parameters!"
         });
     }
 
     try {
-        const device = await Devices.findByPk(id);
-        if (!device) {
+        const result = await deviceService.changeDeviceUuid(id);
+
+        if (!result.success) {
             return res.status(404).json({
-                message: "Device not found"
+                message: result.message
             });
         }
 
-        const uuid = uuidCreator.v4();
-        device.uuid = uuid;
-        await device.save();
-
-        const result = await Devices.findOne({ where: { uuid: uuid } });
-
-        if (result) {
-            res.status(200).json({
-                message: "UUID changed successfully!",
-                data: result
-            });
-        } else {
-            res.status(500).json({
-                message: "Error changing the UUID!"
-            });
-        }
+        return res.status(200).json({
+            message: "New device added successfully!",
+            data: result.data
+        });
     } catch (error) {
-        res.status(500).json({
-            message: error.message || "Internal Server Error",
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
         });
     }
 }
+
 
 const deleteDevice = async (req, res) => {
     const id = req.query.id;
 
     if (!id) {
         return res.status(400).json({
-            message: "Faulty query parameters!",
+            message: "Faulty query parameters!"
         });
     }
 
     try {
-        const device = await Devices.findByPk(id);
+        const result = await deviceService.deleteDevice(id);
 
-        if (!device) {
+        if (!result.success) {
             return res.status(404).json({
-                message: "Device not found"
+                message: result.message
             });
         }
 
-        device.deletedAt = new Date();
-        await device.save();
-
-        if (device.deletedAt) {
-            return res.status(200).json({
-                message: "Device deleted successfully from the database!"
-            });
-        } else {
-            return res.status(500).json({
-                message: "Error deleting the device from the database"
-            });
-        }
+        return res.status(200).json({
+            message: result.message
+        });
     } catch (error) {
         return res.status(500).json({
-            message: error.message || "Internal Server Error"
+            message: error.message || 'Internal Server Error'
         });
     }
 }
@@ -342,6 +427,7 @@ const getSubscriptions = async (req, res) => {
         });
     }
 }
+
 
 const subscribe = async (req, res) => {
     const device = req.query.device;
@@ -413,6 +499,9 @@ module.exports = {
     getLast30DaysMeasurements,
     getLast60DaysMeasurements,
     getLast120DaysMeasurements,
+    getMeasurementsByDevice,
+    getMeasurementsByDeviceFromDate,
+    getMeasurementsByDeviceFromDateRange,
     getDevices,
     initializeDevice,
     changeDeviceUuid,

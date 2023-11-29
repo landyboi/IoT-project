@@ -78,6 +78,7 @@ const unsubscribe = async (id) => {
 }
 
 
+
 module.exports = {
     getSubscribersForDevice,
     getAllSubscribers,

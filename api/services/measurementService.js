@@ -66,7 +66,7 @@ const deleteMeasurement = async (id) => {
         }
 
     } catch (error) {
-        throw new Error('Error deleting entry from database!');
+        throw new Error('Error deleting the entry from the database!');
     }
 };
 
@@ -131,6 +131,90 @@ const getLast120DaysMeasurements = async () => {
 }
 
 
+const getMeasurementsByDevice = async (id) => {
+    try {
+        const result = await Measurements.findAll( {
+            where: { device: id},
+            deletedAt: null
+        });
+
+        if (result.length === 0) {
+            return { success: false, message: 'No measurements found!' };
+        }
+
+        return { success: true, data: result };
+    } catch (error) {
+        throw new Error('Error searching the database!');
+    }
+}
+
+
+const getMeasurementsByDeviceFromDate = async (id, date) => {
+    try {
+        const startDate = moment(date).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+        const endDate = moment(date).endOf('day').format('YYYY-MM-DD HH:mm:ss');
+
+        const measurements = await Measurements.findAll({
+            where: {
+                device: id,
+                deletedAt: null
+            }
+        });
+
+        let result = [];
+
+        measurements.forEach(measurement => {
+            if (moment(measurement.measuredAt).isBetween(startDate, endDate)) {
+                result.push(measurement);
+            } else if (measurement.measuredAt === null && moment(measurement.createdAt).isBetween(startDate, endDate)) {
+                result.push(measurement);
+            }
+        })
+
+        if (result.length === 0) {
+            return { success: false, message: 'No measurements found!' };
+        }
+
+        return { success: true, data: result };
+    } catch (error) {
+        throw new Error('Error searching the database!');
+    }
+}
+
+
+const getMeasurementsByDeviceFromDateRange = async (id, startDate, endDate) => {
+    try {
+        const firstDate = moment(startDate).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+        const secondDate = moment(endDate).endOf('day').format('YYYY-MM-DD HH:mm:ss');
+
+        const measurements = await Measurements.findAll({
+            where: {
+                device: id,
+                deletedAt: null
+            }
+        });
+
+        let result = [];
+
+        measurements.forEach(measurement => {
+            if (moment(measurement.measuredAt).isBetween(firstDate, secondDate)) {
+                result.push(measurement);
+            } else if (measurement.measuredAt === null && moment(measurement.createdAt).isBetween(firstDate, secondDate)) {
+                result.push(measurement);
+            }
+        })
+
+        if (result.length === 0) {
+            return { success: false, message: 'No measurements found!' };
+        }
+
+        return { success: true, data: result };
+    } catch (error) {
+        throw new Error('Error searching the database!');
+    }
+}
+
+
 
 module.exports = {
     getMeasurements,
@@ -138,5 +222,8 @@ module.exports = {
     deleteMeasurement,
     getLast30DaysMeasurements,
     getLast60DaysMeasurements,
-    getLast120DaysMeasurements
+    getLast120DaysMeasurements,
+    getMeasurementsByDevice,
+    getMeasurementsByDeviceFromDate,
+    getMeasurementsByDeviceFromDateRange
 }
