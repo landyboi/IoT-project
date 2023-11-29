@@ -26,32 +26,12 @@ connection.connect((err) => {
 
     console.log('Connected to the MariaDB database');
 
-
     const query = 'SHOW TABLES';
 
     connection.query(query, (err, results) => {
         if (err) {
             console.error('Error retrieving tables:', err);
         } else {
-            const dropMeasurements = 'DROP TABLE Measurements';
-            const dropDevices = 'DROP TABLE Devices';
-
-            connection.query(dropMeasurements, (dropErr) => {
-                if (dropErr) {
-                    console.error('Error dropping table Measurements', dropErr);
-                } else {
-                    console.log('Table Measurements dropped successfully');
-                }
-            });
-
-            connection.query(dropDevices, (dropErr) => {
-                if (dropErr) {
-                    console.error('Error dropping table Devices', dropErr);
-                } else {
-                    console.log('Table Devices dropped successfully');
-                }
-            });
-
             results.forEach((row) => {
                 const tableName = row[Object.keys(row)[0]];
                 const dropQuery = `DROP TABLE \`${tableName}\``;
@@ -74,5 +54,4 @@ connection.connect((err) => {
             });
         }
     });
-
 });
