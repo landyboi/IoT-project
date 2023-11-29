@@ -1,4 +1,4 @@
-// RUN THE SCRIPT BY RUNNING: node PrintAllTables.js
+// RUN THE SCRIPT BY RUNNING: node printAllTables.js
 
 const mysql = require('mysql');
 const dotenv = require('dotenv');

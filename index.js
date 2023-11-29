@@ -29,7 +29,7 @@ function start() {
     }
 
 // Open index.html if the user goes to an url that doesn't exist
-app.use(function(req, res, next) {
+app.use(function(req, res) {
     res.status(404).sendFile(__dirname + '/index.html');
 });
 
