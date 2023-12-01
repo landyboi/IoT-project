@@ -1,8 +1,6 @@
 import React from "react";
-import { iconUrlFromCode } from "../services/weatherService";
 
-function Forecast({ title, items }) {
-  console.log(items);
+function Forecast({title}) {
   return (
     <div>
       <div className="flex items-center justify-start mt-6">
@@ -29,20 +27,51 @@ function Forecast({ title, items }) {
           </div>
         ))} */}
 
-        {items.map((item, index) => (
-          <div
-            key={index}
-            className="flex flex-col items-center justify-center"
-          >
-            <p className="font-light text-sm">{item.title}</p>
-            <img
-              src={iconUrlFromCode(item.icon)}
-              className="w-12 my-1"
-              alt=""
-            />
-            <p className="font-medium">{`${item.temp.toFixed()}°`}</p>
-          </div>
-        ))}
+        <div key={1} className="flex flex-col items-center justify-center">
+          <p className="font-light text-sm">title</p>
+          <img
+            src="http://openweathermap.org/img/wn/01d@2x.png"
+            className="w-12 my-1"
+            alt=""
+          />
+          <p className="font-medium">detail</p>
+        </div>
+        <div key={2} className="flex flex-col items-center justify-center">
+          <p className="font-light text-sm">title</p>
+          <img
+            src="http://openweathermap.org/img/wn/01d@2x.png"
+            className="w-12 my-1"
+            alt=""
+          />
+          <p className="font-medium">detail</p>
+        </div>
+        <div key={3} className="flex flex-col items-center justify-center">
+          <p className="font-light text-sm">title</p>
+          <img
+            src="http://openweathermap.org/img/wn/01d@2x.png"
+            className="w-12 my-1"
+            alt=""
+          />
+          <p className="font-medium">detail</p>
+        </div>
+        <div key={4} className="flex flex-col items-center justify-center">
+          <p className="font-light text-sm">title</p>
+          <img
+            src="http://openweathermap.org/img/wn/01d@2x.png"
+            className="w-12 my-1"
+            alt=""
+          />
+          <p className="font-medium">detail</p>
+        </div>
+              <div key={5} className="flex flex-col items-center justify-center">
+          <p className="font-light text-sm">title</p>
+          <img
+            src="http://openweathermap.org/img/wn/01d@2x.png"
+            className="w-12 my-1"
+            alt=""
+          />
+          <p className="font-medium">detail</p>
+        </div>
       </div>
     </div>
   );
