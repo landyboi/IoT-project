@@ -3,8 +3,6 @@ import {
   UilTemperature,
   UilTear,
   UilWind,
-  UilSun,
-  UilSunset,
 } from "@iconscout/react-unicons";
 
 function TemperatureAndDetails() {

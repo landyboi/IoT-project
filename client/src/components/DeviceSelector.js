@@ -1,21 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { BiChevronDown } from "react-icons/bi";
-import { AiOutlineSearch } from "react-icons/ai";
 
-const Selector = () => {
-  const [countries, setCountries] = useState(null);
+const Selector = ({ devices }) => {
   const [inputValue, setInputValue] = useState("");
   const [selected, setSelected] = useState("");
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    fetch("https://restcountries.com/v2/all?fields=name")
-      .then((res) => res.json())
-      .then((data) => {
-        setCountries(data);
-      });
-  }, []);
-
+  
   return (
     <div className="w-72 font-medium relative">
       <div
@@ -34,7 +24,6 @@ const Selector = () => {
       {open && ( // Render the dropdown only when 'open' is true
         <div className="absolute z-10 top-full left-0 right-0 bg-white shadow-md">
           <div className="flex items-center px-2 sticky top-0 bg-white">
-            <AiOutlineSearch size={18} className="text-gray-700" />
             <input
               type="text"
               value={inputValue}
@@ -44,30 +33,26 @@ const Selector = () => {
             />
           </div>
           <ul className="overflow-y-auto max-h-60">
-            {countries?.map((country) => (
+            {devices?.data.map((device) => (
               <li
-                key={country?.name}
+                key={device?.name}
                 className={`p-2 text-sm hover:bg-sky-600 hover:text-white
                   ${
-                    country?.name?.toLowerCase() === selected?.toLowerCase() &&
+                    device?.name?.toLowerCase() === selected?.toLowerCase() &&
                     "bg-sky-600 text-white"
                   }
                   ${
-                    country?.name?.toLowerCase().startsWith(inputValue)
+                    device?.name?.toLowerCase().startsWith(inputValue)
                       ? "block"
                       : "hidden"
                   }`}
                 onClick={() => {
-                  if (
-                    country?.name?.toLowerCase() !== selected.toLowerCase()
-                  ) {
-                    setSelected(country?.name);
+                    setSelected(device?.name);
                     setOpen(false);
                     setInputValue("");
-                  }
                 }}
               >
-                {country?.name}
+                {device?.name}
               </li>
             ))}
           </ul>
