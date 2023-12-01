@@ -1,6 +1,6 @@
 const {Devices} = require("../../models");
 const uuidCreator = require("uuid");
-
+const { convertCountryNameToCode } = require("../../services/countryCodeService");
 
 const getDevices = async () => {
     try {
@@ -22,6 +22,7 @@ const initializeDevice = async (name, country) => {
         const nameCheck = await Devices.findOne({ where: { name: name } } );
 
         if (nameCheck.length === 0) {
+            const countryCode = convertCountryNameToCode(country);
             const result = await Devices.create({name: name, uuid: uuidCreator.v4(), country: country});
 
             if (result) {
