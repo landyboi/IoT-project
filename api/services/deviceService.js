@@ -21,7 +21,7 @@ const initializeDevice = async (name, country) => {
     try {
         const nameCheck = await Devices.findOne({ where: { name: name } } );
 
-        if (nameCheck.length === 0) {
+        if (nameCheck === null) {
             const result = await Devices.create({name: name, uuid: uuidCreator.v4(), country: country});
 
             if (result) {
