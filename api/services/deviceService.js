@@ -82,10 +82,29 @@ const deleteDevice = async (id) => {
 }
 
 
+const getDevicesForClient = async () => {
+    try {
+        const devices = await Devices.findAll({
+            attributes: ['id', 'name', 'country'],
+            where: { deletedAt: null }
+        });
+
+        if (devices.length === 0) {
+            return { success: false, message: 'No devices found!' };
+        }
+
+        return { success: true, data: devices };
+    } catch (error) {
+        throw new Error('Error searching the database!');
+    }
+}
+
+
 
 module.exports = {
     getDevices,
     initializeDevice,
     changeDeviceUuid,
-    deleteDevice
+    deleteDevice,
+    getDevicesForClient
 }
