@@ -1,6 +1,6 @@
 const {Devices} = require("../../models");
 const uuidCreator = require("uuid");
-const { convertCountryNameToCode } = require("../../services/countryCodeService");
+const { convertCountryToCode } = require("../../services/countryCodeService");
 
 const getDevices = async () => {
     try {
@@ -21,9 +21,14 @@ const initializeDevice = async (name, country) => {
     try {
         const nameCheck = await Devices.findOne({ where: { name: name } } );
 
-        if (nameCheck.length === 0) {
-            const countryCode = convertCountryNameToCode(country);
-            const result = await Devices.create({name: name, uuid: uuidCreator.v4(), country: country});
+        if (nameCheck === null) {
+            const countryCode = convertCountryToCode(country);
+
+            if (!countryCode) {
+                return {success: false, message: "Country not found or not supported!"};
+            }
+
+            const result = await Devices.create({name: name, uuid: uuidCreator.v4(), country: countryCode});
 
             if (result) {
                 return {success: true, data: result};

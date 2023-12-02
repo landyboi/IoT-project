@@ -1,13 +1,8 @@
 
-const validateCountryCode = (countryCode) => {
-    if (countryCode.length !== 3) {
-        return false;
+const convertCountryToCode = (countryName) => {
+    if (!validateCountry(countryName)) {
+        return false
     }
-
-    return !!listOfCountryCodes().includes(countryCode);
-}
-
-const convertCountryNameToCode = (countryName) => {
 
     return listOfCountryCodes()[countryName];
 }
@@ -18,6 +13,11 @@ const convert3DigitISOto2DigitISO = (countryCode) => {
     }
 
     return countryCode.slice(0, 2);
+}
+
+const validateCountry = (countryName) => {
+
+    return !!listOfCountryCodes()[countryName];
 }
 
 
@@ -192,7 +192,7 @@ const listOfCountryCodes = () => {
 }
 
 module.exports = {
-    validateCountryCode,
-    convertCountryNameToCode,
-    convert3DigitISOto2DigitISO
+    convertCountryToCode,
+    convert3DigitISOto2DigitISO,
+    validateCountry
 }
