@@ -311,7 +311,7 @@ const getDevices = async (req, res) => {
 
 const initializeDevice = async (req, res) => {
     const name = req.query.name;
-    const country = req.query.country || 'FIN';
+    const country = req.query.country || 'Finland'
 
     if (!name || !country) {
         return res.status(400).json({
