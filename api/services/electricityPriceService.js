@@ -19,20 +19,20 @@ const isElectricityPriceHigh = async () => {
 
         if (currentPrice >= (averagePrice*1.2)) {
             return { success: true, data: 'high' };
-        } else if (currentPrice < (averagePrice*1.2) && currentPrice >= (averagePrice*0.8)) {
-            return { success: true, data: 'moderate' };
-        } else {
+        } else if (currentPrice <= (averagePrice*0.8)) {
             return { success: true, data: 'low' };
+        } else {
+            return { success: true, data: 'moderate' };
         }
     }
 
     if (!prices){
         if (currentPrice >= electricityPriceTable.high) {
             return { success: true, data: 'high' };
-        } else if (currentPrice < electricityPriceTable.high && currentPrice >= electricityPriceTable.low) {
-            return { success: true, data: 'moderate' };
-        } else {
+        } else if (currentPrice <= electricityPriceTable.low) {
             return { success: true, data: 'low' };
+        } else {
+            return { success: true, data: 'moderate' };
         }
     }
 }
