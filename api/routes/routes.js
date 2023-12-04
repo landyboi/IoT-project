@@ -65,4 +65,9 @@ router.delete('/unsubscribe', checkApiKey('client'), apiController.unsubscribe);
 
 
 
+// Electricity Routes here
+router.get('/electricity', checkApiKey('client'), apiController.isElectricityPriceHigh);
+
+
+
 module.exports = router;
