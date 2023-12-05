@@ -490,7 +490,28 @@ const unsubscribe = async (req, res) => {
     }
 }
 
+const dailyAverageService = require("../services/dailyAverageService");
 
+const test = async (req, res) => {
+    try {
+        const result = await dailyAverageService.getDailyAverages(2, '2023-11-18');
+        console.log(result)
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json({
+            message: "New subscriber added successfully!",
+            data: result.data
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
+        });
+    }
+}
 
 module.exports = {
     getMeasurements,
@@ -509,5 +530,6 @@ module.exports = {
     getSubscriptions,
     subscribe,
     unsubscribe,
+    test,
     eventEmitter
 }
