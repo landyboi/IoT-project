@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BiChevronDown } from "react-icons/bi";
 
 const Selector = ({ devices }) => {
