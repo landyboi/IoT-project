@@ -285,6 +285,37 @@ const getMeasurementsByDeviceFromDateRange = async (req, res) => {
 }
 
 
+const getLatestMeasurementByDevice = async (req, res) => {
+    const id = req.query.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+
+    try {
+        const result = await measurementService.getLatestMeasurementByDevice(id);
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
+        });
+    }
+}
+
+
 
 // Device Related Functions //
 const getDevices = async (req, res) => {
@@ -405,6 +436,29 @@ const deleteDevice = async (req, res) => {
 }
 
 
+const getDevicesForClient = async (req, res) => {
+    try {
+        const result = await deviceService.getDevicesForClient();
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
+        });
+    }
+}
+
+
 
 // Subscriber Related Functions //
 const getSubscriptions = async (req, res) => {
@@ -520,10 +574,12 @@ module.exports = {
     getMeasurementsByDevice,
     getMeasurementsByDeviceFromDate,
     getMeasurementsByDeviceFromDateRange,
+    getLatestMeasurementByDevice,
     getDevices,
     initializeDevice,
     changeDeviceUuid,
     deleteDevice,
+    getDevicesForClient,
     getSubscriptions,
     subscribe,
     unsubscribe,

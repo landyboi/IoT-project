@@ -227,6 +227,24 @@ const getMeasurementsByDeviceFromDateRange = async (id, startDate, endDate) => {
 }
 
 
+const getLatestMeasurementByDevice = async (id) => {
+try {
+        const result = await Measurements.findOne({
+            where: { device: id },
+            order: [['createdAt', 'DESC']]
+        });
+
+        if (result.length === 0) {
+            return { success: false, message: 'No measurements found!' };
+        }
+
+        return { success: true, data: result };
+    } catch (error) {
+        throw new Error('Error searching the database!');
+    }
+}
+
+
 
 module.exports = {
     getMeasurements,
@@ -237,5 +255,6 @@ module.exports = {
     getLast120DaysMeasurements,
     getMeasurementsByDevice,
     getMeasurementsByDeviceFromDate,
-    getMeasurementsByDeviceFromDateRange
+    getMeasurementsByDeviceFromDateRange,
+    getLatestMeasurementByDevice
 }
