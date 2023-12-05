@@ -4,6 +4,7 @@ const { sendWeatherEmail } = require("../../services/eventService");
 const measurementService = require("../services/measurementService");
 const subscriberService = require("../services/subscriberService");
 const deviceService = require("../services/deviceService");
+const electricityPriceService = require("../services/electricityPriceService");
 
 // EVENTS HERE!
 //////////////////////////////////////////////////////////////////////////////////////
@@ -481,7 +482,24 @@ const unsubscribe = async (req, res) => {
         }
 
         return res.status(200).json({
-            message: result.message,
+            message: 'Subscriber deleted successfully!'
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
+        });
+    }
+}
+
+
+
+const isElectricityPriceHigh = async (req, res) => {
+    try {
+        const result = await electricityPriceService.isElectricityPriceHigh();
+
+        return res.status(200).json({
+            message: 'Electricity price checked successfully!',
+            data: result.data
         });
     } catch (error) {
         return res.status(500).json({
@@ -509,5 +527,6 @@ module.exports = {
     getSubscriptions,
     subscribe,
     unsubscribe,
+    isElectricityPriceHigh,
     eventEmitter
 }
