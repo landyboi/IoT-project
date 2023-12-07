@@ -4,6 +4,7 @@ const { sendWeatherEmail } = require("../../services/eventService");
 const measurementService = require("../services/measurementService");
 const subscriberService = require("../services/subscriberService");
 const deviceService = require("../services/deviceService");
+const electricityPriceService = require("../services/electricityPriceService");
 
 // EVENTS HERE!
 //////////////////////////////////////////////////////////////////////////////////////
@@ -284,6 +285,37 @@ const getMeasurementsByDeviceFromDateRange = async (req, res) => {
 }
 
 
+const getLatestMeasurementByDevice = async (req, res) => {
+    const id = req.query.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+
+    try {
+        const result = await measurementService.getLatestMeasurementByDevice(id);
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
+        });
+    }
+}
+
+
 
 // Device Related Functions //
 const getDevices = async (req, res) => {
@@ -311,7 +343,7 @@ const getDevices = async (req, res) => {
 
 const initializeDevice = async (req, res) => {
     const name = req.query.name;
-    const country = req.query.country || 'FIN';
+    const country = req.query.country || 'Finland'
 
     if (!name || !country) {
         return res.status(400).json({
@@ -404,6 +436,29 @@ const deleteDevice = async (req, res) => {
 }
 
 
+const getDevicesForClient = async (req, res) => {
+    try {
+        const result = await deviceService.getDevicesForClient();
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
+        });
+    }
+}
+
+
 
 // Subscriber Related Functions //
 const getSubscriptions = async (req, res) => {
@@ -481,7 +536,24 @@ const unsubscribe = async (req, res) => {
         }
 
         return res.status(200).json({
-            message: result.message,
+            message: 'Subscriber deleted successfully!'
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
+        });
+    }
+}
+
+
+
+const isElectricityPriceHigh = async (req, res) => {
+    try {
+        const result = await electricityPriceService.isElectricityPriceHigh();
+
+        return res.status(200).json({
+            message: 'Electricity price checked successfully!',
+            data: result.data
         });
     } catch (error) {
         return res.status(500).json({
@@ -502,12 +574,15 @@ module.exports = {
     getMeasurementsByDevice,
     getMeasurementsByDeviceFromDate,
     getMeasurementsByDeviceFromDateRange,
+    getLatestMeasurementByDevice,
     getDevices,
     initializeDevice,
     changeDeviceUuid,
     deleteDevice,
+    getDevicesForClient,
     getSubscriptions,
     subscribe,
     unsubscribe,
+    isElectricityPriceHigh,
     eventEmitter
 }

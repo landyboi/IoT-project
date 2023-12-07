@@ -39,6 +39,7 @@ router.get('/', (req, res) => {
 router.get('/values', checkApiKey('client'), apiController.getMeasurements);
 router.post('/values', checkApiKey('client'), apiController.storeMeasurement);
 router.delete('/values', checkApiKey('client'), apiController.deleteMeasurement);
+router.get('/values/latest', checkApiKey('client'), apiController.getLatestMeasurementByDevice);
 
 router.get('/values/last30', checkApiKey('client'), apiController.getLast30DaysMeasurements);
 router.get('/values/last60', checkApiKey('client'), apiController.getLast60DaysMeasurements);
@@ -52,9 +53,10 @@ router.get('/values/:id/:startDate/:endDate', checkApiKey('client'), apiControll
 
 // Devices Routes here
 router.get('/devices', checkApiKey('admin'), apiController.getDevices);
+router.delete('/devices', checkApiKey('admin'), apiController.deleteDevice);
 router.post('/devices/initialize', checkApiKey('client'), apiController.initializeDevice);
 router.patch('/devices/uuid', checkApiKey('admin'), apiController.changeDeviceUuid);
-router.delete('/devices', checkApiKey('admin'), apiController.deleteDevice);
+router.get('/devices/client', checkApiKey('client'), apiController.getDevicesForClient);
 
 
 
@@ -62,6 +64,11 @@ router.delete('/devices', checkApiKey('admin'), apiController.deleteDevice);
 router.get('/subscriptions', checkApiKey('admin'), apiController.getSubscriptions);
 router.post('/subscribe', checkApiKey('client'), apiController.subscribe);
 router.delete('/unsubscribe', checkApiKey('client'), apiController.unsubscribe);
+
+
+
+// Electricity Routes here
+router.get('/electricity', checkApiKey('client'), apiController.isElectricityPriceHigh);
 
 
 

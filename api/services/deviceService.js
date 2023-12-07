@@ -1,6 +1,6 @@
 const {Devices} = require("../../models");
 const uuidCreator = require("uuid");
-
+const { convertCountryToCode } = require("../../services/countryCodeService");
 
 const getDevices = async () => {
     try {
@@ -21,8 +21,14 @@ const initializeDevice = async (name, country) => {
     try {
         const nameCheck = await Devices.findOne({ where: { name: name } } );
 
-        if (nameCheck.length === 0) {
-            const result = await Devices.create({name: name, uuid: uuidCreator.v4(), country: country});
+        if (nameCheck === null) {
+            const countryCode = convertCountryToCode(country);
+
+            if (!countryCode) {
+                return {success: false, message: "Country not found or not supported!"};
+            }
+
+            const result = await Devices.create({name: name, uuid: uuidCreator.v4(), country: countryCode});
 
             if (result) {
                 return {success: true, data: result};
@@ -82,10 +88,29 @@ const deleteDevice = async (id) => {
 }
 
 
+const getDevicesForClient = async () => {
+    try {
+        const devices = await Devices.findAll({
+            attributes: ['id', 'name', 'country'],
+            where: { deletedAt: null }
+        });
+
+        if (devices.length === 0) {
+            return { success: false, message: 'No devices found!' };
+        }
+
+        return { success: true, data: devices };
+    } catch (error) {
+        throw new Error('Error searching the database!');
+    }
+}
+
+
 
 module.exports = {
     getDevices,
     initializeDevice,
     changeDeviceUuid,
-    deleteDevice
+    deleteDevice,
+    getDevicesForClient
 }
