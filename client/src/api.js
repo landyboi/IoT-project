@@ -1,32 +1,36 @@
 import axios from 'axios';
 
-const apiDevices = axios.create({
-    baseURL: 'http://localhost:3000/api/devices',
+const api = axios.create({
+    baseURL: 'http://localhost:3000/api',
     headers: {
         'Content-Type': 'application/json',
-        'key' : "tuomasadmin"
-    },
+        'key': 'tuomasclient'
+    }
 });
 
-const apiValues = axios.create({
-    baseURL: 'http://localhost:3000/api/values',
-    headers: {
-        'Content-Type': 'application/json',
-        'key' : "tuomasclient"
-    },
-});
 
-export const getValues = async (device) => {
-    return await apiValues.get('/').then((res) => {
-        return res.data;
-    }).catch((error) => {
-        console.log(error);
+
+export const getLatestMeasurement = async (device) => {
+    const result = await api.get('/values/latest', {
+        params: {
+            id: device
+        }
     });
+
+    return result.data
 }
-export const getDevices = async () => {
-    return await apiDevices.get('/').then((res) => {
-        return res.data;
-    }).catch((error) => {
-        console.log(error);
-    });
+
+export const getAllDevices = async () => {
+    const result = await api.get('/devices/client');
+
+    return result.data;
+};
+
+export const getTodaysMeasurementsForDevice = async (device) => {
+    const today = new Date();
+    const datestamp = today.getFullYear() + "-" + today.getMonth() + "-" + today.getDate();
+
+    const result = await api.get(`/values/${device}/${datestamp}`);
+
+    return result.data;
 };

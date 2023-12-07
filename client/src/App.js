@@ -4,30 +4,10 @@ import Inputs from "./components/Inputs";
 import TimeAndLocation from "./components/TimeAndLocation";
 import TemperatureAndDetails from "./components/TemperatureAndDetails";
 import Forecast from "./components/Forecast";
-import { getDevices } from "./api";
 import { useState, useEffect } from "react";
-import { getValues } from "./api";
 
 function App() {
 
-const [devices, setDevices] = useState(null);
-const [values, setValues] = useState(null);
-
-useEffect(() => {
-    async function fetchDevices() {
-      const devices = await getDevices();
-      setDevices(devices);
-    }
-    fetchDevices();
-}, []);
-
-useEffect(() => {
-  async function fetchValues() {
-    const values = await getValues();
-    setValues(values);
-  }
-  fetchValues();
-}, []);
 
   return (
     <div
@@ -36,7 +16,7 @@ useEffect(() => {
       <TopButtons devices={devices}/>
       <Inputs devices={devices}/>
       <TimeAndLocation />
-      <TemperatureAndDetails values={values}/>
+      <TemperatureAndDetails />
       <Forecast title="Last 5 measurements" values={values}/>
       <Forecast title="Avarage temperature from the last 5 days"/>
 
