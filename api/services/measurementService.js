@@ -1,7 +1,7 @@
 const {Measurements, Devices} = require("../../models");
 const moment = require("moment/moment");
 const {Op} = require("sequelize");
-const { modifyTimezone } = require("../../services/timezoneModifier");
+const { modifyTimezone, returnTimestampInNewTimezone } = require("../../services/timezoneModifier");
 
 
 const getMeasurements = async () => {
@@ -29,6 +29,8 @@ const storeMeasurement = async (temperature, humidity, airpressure, dewpoint, me
 
         if (measuredAt) {
             measuredAt = modifyTimezone(measuredAt);
+        } else {
+            measuredAt = new Date();
         }
 
         const result = await Measurements.create({
@@ -37,7 +39,7 @@ const storeMeasurement = async (temperature, humidity, airpressure, dewpoint, me
             ...(humidity && { humidity: humidity }),
             ...(airpressure && { airpressure: airpressure }),
             ...(dewpoint && { dewpoint: dewpoint }),
-            ...(measuredAt && { measuredAt: measuredAt }),
+            measuredAt: measuredAt
         });
 
         if (result) {
@@ -142,6 +144,14 @@ const getMeasurementsByDevice = async (id) => {
             return { success: false, message: 'No measurements found!' };
         }
 
+        const countryCode = await Devices.findByPk(id).then(device => device.country);
+
+        result.forEach(measurement => {
+            if (measurement.measuredAt !== null) {
+                measurement.measuredAt = returnTimestampInNewTimezone(measurement.measuredAt, countryCode);
+            }
+        })
+
         return { success: true, data: result };
     } catch (error) {
         throw new Error('Error searching the database!');
@@ -154,28 +164,29 @@ const getMeasurementsByDeviceFromDate = async (id, date) => {
         const startDate = moment(date).startOf('day').format('YYYY-MM-DD HH:mm:ss');
         const endDate = moment(date).endOf('day').format('YYYY-MM-DD HH:mm:ss');
 
-        const measurements = await Measurements.findAll({
+        const result = await Measurements.findAll({
             where: {
                 device: id,
+                measuredAt: {
+                    [Op.between]: [startDate, endDate]
+                },
                 deletedAt: null
             }
         });
-
-        let result = [];
-
-        measurements.forEach(measurement => {
-            if (moment(measurement.measuredAt).isBetween(startDate, endDate)) {
-                result.push(measurement);
-            } else if (measurement.measuredAt === null && moment(measurement.createdAt).isBetween(startDate, endDate)) {
-                result.push(measurement);
-            }
-        })
 
         if (result.length === 0) {
             return { success: false, message: 'No measurements found!' };
         }
 
-        return { success: true, data: result };
+        const countryCode = await Devices.findByPk(id).then(device => device.country);
+
+        result.forEach(measurement => {
+            if (measurement.measuredAt !== null) {
+                measurement.measuredAt = returnTimestampInNewTimezone(measurement.measuredAt, countryCode);
+            }
+        })
+
+        return {success: true, data: result };
     } catch (error) {
         throw new Error('Error searching the database!');
     }
@@ -187,22 +198,41 @@ const getMeasurementsByDeviceFromDateRange = async (id, startDate, endDate) => {
         const firstDate = moment(startDate).startOf('day').format('YYYY-MM-DD HH:mm:ss');
         const secondDate = moment(endDate).endOf('day').format('YYYY-MM-DD HH:mm:ss');
 
-        const measurements = await Measurements.findAll({
+        const result = await Measurements.findAll({
             where: {
                 device: id,
+                measuredAt: {
+                    [Op.between]: [firstDate, secondDate]
+                },
                 deletedAt: null
             }
         });
 
-        let result = [];
+        if (result.length === 0) {
+            return { success: false, message: 'No measurements found!' };
+        }
 
-        measurements.forEach(measurement => {
-            if (moment(measurement.measuredAt).isBetween(firstDate, secondDate)) {
-                result.push(measurement);
-            } else if (measurement.measuredAt === null && moment(measurement.createdAt).isBetween(firstDate, secondDate)) {
-                result.push(measurement);
+        const countryCode = await Devices.findByPk(id).then(device => device.country);
+
+        result.forEach(measurement => {
+            if (measurement.measuredAt !== null) {
+                measurement.measuredAt = returnTimestampInNewTimezone(measurement.measuredAt, countryCode);
             }
         })
+
+        return {success: true, data: result };
+    } catch (error) {
+        throw new Error('Error searching the database!');
+    }
+}
+
+
+const getLatestMeasurementByDevice = async (id) => {
+try {
+        const result = await Measurements.findOne({
+            where: { device: id },
+            order: [['createdAt', 'DESC']]
+        });
 
         if (result.length === 0) {
             return { success: false, message: 'No measurements found!' };
@@ -225,5 +255,6 @@ module.exports = {
     getLast120DaysMeasurements,
     getMeasurementsByDevice,
     getMeasurementsByDeviceFromDate,
-    getMeasurementsByDeviceFromDateRange
+    getMeasurementsByDeviceFromDateRange,
+    getLatestMeasurementByDevice
 }

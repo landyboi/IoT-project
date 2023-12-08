@@ -1,4 +1,6 @@
 const moment = require('moment-timezone');
+const { convert3DigitISOto2DigitISO } = require('./countryCodeService');
+
 
 const modifyTimezone = (timestamp) => {
     const CET = moment.tz(timestamp, "Europe/Paris");
@@ -9,6 +11,10 @@ const modifyTimezone = (timestamp) => {
 
 
 const returnTimestampInNewTimezone = (timestamp, countryCode) => {
+    if (countryCode.length === 3) {
+        countryCode = convert3DigitISOto2DigitISO(countryCode);
+    }
+
     const timezones = moment.tz.zonesForCountry(countryCode);
 
     if (timezones === null) {
@@ -24,7 +30,7 @@ const returnTimestampInNewTimezone = (timestamp, countryCode) => {
     const originalTimestamp = moment.tz(timestamp, "Europe/London");
     const newTimestamp = originalTimestamp.clone().tz(timezone);
 
-    return newTimestamp.format('YYYY-MM-DD HH:mm:ss');
+    return newTimestamp.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
 }
 
 
