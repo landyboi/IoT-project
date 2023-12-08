@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { BiChevronDown } from "react-icons/bi";
 
-const Selector = ({ devices }) => {
+const Selector = ({ devices, onSelectDevice }) => {
   const [inputValue, setInputValue] = useState("");
   const [selected, setSelected] = useState("");
   const [open, setOpen] = useState(false);
-  
+
+    const handleSelectDevice = (device) => {
+        onSelectDevice(device);
+    };
+
   return (
     <div className="w-72 font-medium relative">
       <div
@@ -15,13 +19,13 @@ const Selector = ({ devices }) => {
         }`}
       >
         {selected
-          ? selected?.length > 25
-            ? selected?.substring(0, 25) + "..."
+          ? selected.length > 25
+            ? selected.substring(0, 25) + "..."
             : selected
           : "Select Sensor"}
         <BiChevronDown size={20} className={`${open && "rotate-180"}`} />
       </div>
-      {open && ( // Render the dropdown only when 'open' is true
+      {open && (
         <div className="absolute z-10 top-full left-0 right-0 bg-white shadow-md">
           <div className="flex items-center px-2 sticky top-0 bg-white">
             <input
@@ -33,28 +37,30 @@ const Selector = ({ devices }) => {
             />
           </div>
           <ul className="overflow-y-auto max-h-60">
-            {devices?.data.map((device) => (
-              <li
-                key={device?.name}
-                className={`p-2 text-sm hover:bg-sky-600 hover:text-white
-                  ${
-                    device?.name?.toLowerCase() === selected?.toLowerCase() &&
-                    "bg-sky-600 text-white"
-                  }
-                  ${
-                    device?.name?.toLowerCase().startsWith(inputValue)
-                      ? "block"
-                      : "hidden"
-                  }`}
-                onClick={() => {
-                    setSelected(device?.name);
-                    setOpen(false);
-                    setInputValue("");
-                }}
-              >
-                {device?.name}
-              </li>
-            ))}
+              {devices && (
+                devices.map((device) => (
+                  <li
+                    key={device.name}
+                    className={`p-2 text-sm hover:bg-sky-600 hover:text-white
+                      ${
+                        device.name.toLowerCase() === selected.toLowerCase() &&
+                        "bg-sky-600 text-white"
+                      }
+                      ${
+                        device.name.toLowerCase().startsWith(inputValue)
+                          ? "block"
+                          : "hidden"
+                      }`}
+                    onClick={() => {
+                        setSelected(device.name);
+                        setOpen(false);
+                        setInputValue("");
+                        handleSelectDevice(device);
+                    }}
+                  >
+                    {device.name}
+                  </li>
+                )))}
           </ul>
         </div>
       )}

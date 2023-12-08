@@ -30,8 +30,7 @@ export const getAllDevices = async () => {
 export const getTodaysMeasurementsForDevice = async (device) => {
     const today = moment().format('YYYY-MM-DD');
 
-    const testDate = '2023-11-15'
-    const result = await api.get(`/values/${device}/${testDate}`);
+    const result = await api.get(`/values/${device}/${today}`);
 
     return result.data.data;
 };
@@ -43,4 +42,13 @@ export const getLast5DaysAverageMeasurementsForDevice = async (device) => {
     const day3 = moment().subtract(2, 'days').format('YYYY-MM-DD');
     const day4 = moment().subtract(3, 'days').format('YYYY-MM-DD');
     const day5 = moment().subtract(4, 'days').format('YYYY-MM-DD');
+
+    const data = {
+        "device": device,
+        "dates": [today, day2, day3, day4, day5]
+    };
+
+    const result = await api.get('/average', data);
+
+    return result.data.data;
 }
