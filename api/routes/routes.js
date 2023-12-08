@@ -41,6 +41,7 @@ router.post('/values', checkApiKey('client'), apiController.storeMeasurement);
 router.delete('/values', checkApiKey('client'), apiController.deleteMeasurement);
 router.get('/values/latest', checkApiKey('client'), apiController.getLatestMeasurementByDevice);
 
+router.get('/values/last5', checkApiKey('client'), apiController.getLast5MeasurementsFromDevice);
 router.get('/values/last30', checkApiKey('client'), apiController.getLast30DaysMeasurements);
 router.get('/values/last60', checkApiKey('client'), apiController.getLast60DaysMeasurements);
 router.get('/values/last120', checkApiKey('client'), apiController.getLast120DaysMeasurements);

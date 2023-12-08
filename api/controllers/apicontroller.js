@@ -121,6 +121,38 @@ const deleteMeasurement = async (req, res) => {
 };
 
 
+const getLast5MeasurementsFromDevice = async (req, res) => {
+    const id = req.query.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+
+    try {
+        const result = await measurementService.getLast5MeasurementsFromDevice(id);
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            }
+        );
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
+        });
+    }
+}
+
+
 const getLast30DaysMeasurements = async (req, res) => {
     try {
         const result = await measurementService.getLast30DaysMeasurements();
@@ -603,6 +635,7 @@ module.exports = {
     getMeasurements,
     storeMeasurement,
     deleteMeasurement,
+    getLast5MeasurementsFromDevice,
     getLast30DaysMeasurements,
     getLast60DaysMeasurements,
     getLast120DaysMeasurements,
