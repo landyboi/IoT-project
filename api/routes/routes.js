@@ -72,4 +72,9 @@ router.get('/electricity', checkApiKey('client'), apiController.isElectricityPri
 
 
 
+// Daily Averages Routes here
+router.get('/average', checkApiKey('client'), apiController.getDailyAverages);
+
+
+
 module.exports = router;
