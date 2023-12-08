@@ -4,6 +4,7 @@ const { sendWeatherEmail } = require("../../services/eventService");
 const measurementService = require("../services/measurementService");
 const subscriberService = require("../services/subscriberService");
 const deviceService = require("../services/deviceService");
+const dailyAverageService = require("../services/dailyAverageService");
 
 // EVENTS HERE!
 //////////////////////////////////////////////////////////////////////////////////////
@@ -490,12 +491,22 @@ const unsubscribe = async (req, res) => {
     }
 }
 
-const dailyAverageService = require("../services/dailyAverageService");
 
-const test = async (req, res) => {
+
+// Daily Average Related Functions //
+const getDailyAverages = async (req, res) => {
+    const device = req.body.device;
+    const dates = req.body.dates;
+
+    if (!device && !dates) {
+        return res.status(400).json({
+            message: "Faulty query parameters!",
+        });
+    }
+
     try {
-        const result = await dailyAverageService.getDailyAverages(2, '2023-11-18');
-        console.log(result)
+        const result = await dailyAverageService.getDailyAverages(device, dates);
+
         if (!result.success) {
             return res.status(404).json({
                 message: result.message
@@ -503,7 +514,7 @@ const test = async (req, res) => {
         }
 
         return res.status(200).json({
-            message: "New subscriber added successfully!",
+            message: "Daily averages retrieved successfully!",
             data: result.data
         });
     } catch (error) {
@@ -512,6 +523,8 @@ const test = async (req, res) => {
         });
     }
 }
+
+
 
 module.exports = {
     getMeasurements,
@@ -530,6 +543,6 @@ module.exports = {
     getSubscriptions,
     subscribe,
     unsubscribe,
-    test,
+    getDailyAverages,
     eventEmitter
 }

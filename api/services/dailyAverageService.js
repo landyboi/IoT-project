@@ -3,22 +3,34 @@ const measurementService = require('./measurementService');
 
 
 
-const getDailyAverages = async (device, date) => {
+const getDailyAverages = async (device, dates) => {
     if (isNaN(device)) {
         throw new Error('Device has to be referenced by id!');
     }
 
-    try {
-        const result = await dailyAverages.findAll({ where: { date: date, device: device, deletedAt: null }});
+    const resultArray = [];
 
-        if (result.length === 0) {
-            return await calculateDailyAverages(device, date);
+    for (const date of dates) {
+        try {
+            const result = await dailyAverages.findAll({where: {date: date, device: device, deletedAt: null}});
+
+            if (result.length === 0) {
+                const dailyAverage = await calculateDailyAverages(device, date);
+                if (!dailyAverage.success) {
+                    resultArray.push(null);
+                    continue;
+                }
+                resultArray.push(dailyAverage.data.averageValues);
+                continue;
+            }
+
+            resultArray.push(result[0].averageValues);
+        } catch (error) {
+            throw new Error('Error calculating the daily averages for date: ' + date + '!');
         }
-
-        return ( { success: true, data: result } );
-    } catch (error) {
-        throw new Error('Error calculating the daily averages!');
     }
+
+    return {success: true, data: resultArray};
 }
 
 
@@ -26,20 +38,16 @@ const calculateDailyAverages = async (device, date) => {
     if (isNaN(device)) {
         throw new Error('Device has to be referenced by id!');
     }
-
+    console.log("HERE for date: " + date);
     try {
         const dailyMeasurements = await measurementService.getMeasurementsByDeviceFromDate(device, date);
 
-        if (!dailyMeasurements) {
-            return {success: false, message: 'Error fetching the daily measurements!'};
+        if (!dailyMeasurements.success) {
+            return {success: false, message: 'No measurements for this device on this date!'};
         }
 
         const measurementsData = dailyMeasurements.data;
         const measurementsLength = measurementsData.length;
-
-        if (measurementsLength === 0) {
-            return {success: false, message: 'No measurements found for this day!'};
-        }
 
         const calculateAverage = (total, length) => {
             const average = total / length;

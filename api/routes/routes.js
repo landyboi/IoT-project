@@ -64,6 +64,10 @@ router.post('/subscribe', checkApiKey('client'), apiController.subscribe);
 router.delete('/unsubscribe', checkApiKey('client'), apiController.unsubscribe);
 
 
-router.get('/test', checkApiKey('client'), apiController.test);
+
+// Daily Averages Routes here
+router.get('/averagevalues', checkApiKey('client'), apiController.getDailyAverages);
+
+
 
 module.exports = router;
