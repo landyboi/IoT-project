@@ -9,15 +9,18 @@ import { getLatestMeasurementFromDevice } from "../api";
 
 function TemperatureAndDetails({ selectedDevice }) {
   const [measurement, setMeasurement] = useState(null);
+  const [error, setError] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
       if (selectedDevice) {
         const result = await getLatestMeasurementFromDevice(selectedDevice.id);
+
         setMeasurement(result.data);
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
+        setError(true);
+        console.error("Error fetching data:", error);
     }
   }, [selectedDevice]);
 
@@ -26,24 +29,30 @@ function TemperatureAndDetails({ selectedDevice }) {
   }, [fetchData]);
 
   useEffect(() => {
-    console.log(selectedDevice);
     setMeasurement(null);
+    setError(false);
   }, [selectedDevice]);
 
   return (
       <div>
-        {measurement ? (
+        {error ? (
+            <div>
+              <h1 className="flex flex-row items-center justify-center space-x-2 text-white text-sm py-3">
+                No data found!
+              </h1>
+            </div>
+        ) : measurement ? (
             <div>
               <div className="flex items-center justify-center py-6 text-xl text-cyan-300">
                 <p>CURRENT WEATHER:</p>
               </div>
 
               <div className="flex flex-row items-center justify-center text-white py-3">
-                <p className="text-5xl">{measurement.temperature}°C</p>
+                <p className="text-5xl">{measurement.temperature} °C</p>
               </div>
 
               <div className="flex flex-row items-center justify-center space-x-2 text-white text-sm py-3">
-                <UilTemperature />
+                <UilTemperature/>
                 <p className="font-ligh text-lg">
                   Dew Point:{' '}
                   <span className="font-medium text-lg ml-1">
@@ -52,7 +61,7 @@ function TemperatureAndDetails({ selectedDevice }) {
                 </p>
                 <p className="font-light">|</p>
 
-                <UilTear />
+                <UilTear/>
                 <p className="font-light text-lg">
                   Humidity:{' '}
                   <span className="font-medium text-lg ml-1">
@@ -61,7 +70,7 @@ function TemperatureAndDetails({ selectedDevice }) {
                 </p>
                 <p className="font-light">|</p>
 
-                <UilWind />
+                <UilWind/>
                 <p className="font-light text-lg">
                   Air Pressure:{' '}
                   <span className="font-medium text-lg ml-1">

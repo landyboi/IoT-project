@@ -73,7 +73,7 @@ router.get('/electricity', checkApiKey('client'), apiController.isElectricityPri
 
 
 // Daily Averages Routes here
-router.get('/average', checkApiKey('client'), apiController.getDailyAverages);
+router.post('/average', checkApiKey('client'), apiController.getDailyAverages);
 
 
 

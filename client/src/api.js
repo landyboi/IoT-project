@@ -4,6 +4,7 @@ import moment from "moment";
 const api = axios.create({
     baseURL: 'http://localhost:8000/api',
     headers: {
+        'Content-Type': 'application/json',
         'key': 'tuomasclient'
     }
 });
@@ -48,7 +49,18 @@ export const getLast5DaysAverageMeasurementsForDevice = async (device) => {
         "dates": [today, day2, day3, day4, day5]
     };
 
-    const result = await api.get('/average', data);
+    const result = await api.post('/average', data);
 
     return result.data.data;
+}
+
+
+export const getLast5MeasurementsForDevice = async (device) => {
+    const result = await api.get('/values/last5', {
+        params: {
+            id: device
+        }
+    });
+
+    return result.data;
 }

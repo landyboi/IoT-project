@@ -234,7 +234,7 @@ try {
             order: [['createdAt', 'DESC']]
         });
 
-        if (result.length === 0) {
+        if (!result) {
             return { success: false, message: 'No measurements found!' };
         }
 
