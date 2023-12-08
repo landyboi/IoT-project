@@ -64,3 +64,17 @@ export const getLast5MeasurementsForDevice = async (device) => {
 
     return result.data;
 }
+
+
+export const subscribe = async (device, email) => {
+    try {
+        const result = await api.post('/subscribe', {
+            device: device,
+            email: email
+        });
+
+        return result.status;
+    } catch (error) {
+        return error.response;
+    }
+}

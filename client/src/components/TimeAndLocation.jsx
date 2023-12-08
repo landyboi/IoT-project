@@ -1,7 +1,8 @@
 import React from "react";
+import moment from "moment";
 
 function TimeAndLocation() {
-  const today = new Date().toLocaleDateString('fi-FI')
+  const today = moment(new Date()).format('MMMM Do YYYY')
 
   
   return (

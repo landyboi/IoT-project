@@ -28,10 +28,10 @@ function App() {
 
   return (
     <div
-      className="mx-auto max-w-screen-md mt-4 py-5 px-32 bg-gradient-to-br from-cyan-700 to-blue-700 h-fit shadow-x1 shadow-gray-400">
+      className="mx-auto max-w-4xl mt-4 py-10 px-32 bg-gradient-to-br from-cyan-700 to-blue-700 h-fit shadow-x1 shadow-gray-400">
 
         <TopButtons devices={devices} onSelectDevice={setSelectedDevice}/>
-        <Inputs devices={devices} onSelectDevice={setSelectedDevice}/>
+        <Inputs devices={devices} onSelectDevice={setSelectedDevice} selectedDevice={selectedDevice}/>
         <TimeAndLocation />
         <TemperatureAndDetails selectedDevice={selectedDevice}/>
         <LastMeasurements selectedDevice={selectedDevice}/>

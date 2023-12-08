@@ -518,23 +518,23 @@ const getSubscriptions = async (req, res) => {
 
 
 const subscribe = async (req, res) => {
-    const device = req.query.device;
-    const email = req.query.email;
+    const device = req.body.device;
+    const email = req.body.email;
 
     if (!device || !email) {
         return res.status(400).json({
-            message: "Faulty query parameters!",
+            message: "Faulty query parameters!"
         });
     }
 
     try {
-        const ip = req.headers['x-forwarded-for'] || undefined;
+        const ip = req.headers['x-forwarded-for'] || req.ip;
 
         const result = await subscriberService.subscribe(email, device, ip);
 
         if (!result.success) {
             return res.status(404).json({
-                message: result.message,
+                message: result.message
             });
         }
 
@@ -544,7 +544,7 @@ const subscribe = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({
-            message: error.message || 'Internal Server Error',
+            message: error.message || 'Internal Server Error'
         });
     }
 }
