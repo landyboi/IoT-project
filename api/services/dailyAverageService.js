@@ -38,12 +38,12 @@ const calculateDailyAverages = async (device, date) => {
     if (isNaN(device)) {
         throw new Error('Device has to be referenced by id!');
     }
-    console.log("HERE for date: " + date);
+
     try {
         const dailyMeasurements = await measurementService.getMeasurementsByDeviceFromDate(device, date);
 
         if (!dailyMeasurements.success) {
-            return {success: false, message: 'No measurements for this device on this date!'};
+            return {success: false, message: 'No measurements found from date: ' + date + '!'};
         }
 
         const measurementsData = dailyMeasurements.data;
@@ -76,20 +76,19 @@ const calculateDailyAverages = async (device, date) => {
             averageHumidity: averageHumidity,
             averageAirpressure: averageAirpressure,
             averageDewpoint: averageDewpoint
-        }
-
+        };
 
         const result = await dailyAverages.create({
             device: device,
             date: date,
-            ...(averageValues && {averageValues: averageValues})
+            averageValues: averageValues
         });
 
         if (!result) {
-            return {success: false, message: 'Error calculating the daily averages!'};
+            return {success: false, message: 'Error storing the daily averages!'};
         }
 
-        return ({success: true, data: result});
+        return ( {success: true, data: result} );
     } catch (error) {
         throw new Error('Error calculating the daily averages!');
     }

@@ -66,7 +66,7 @@ router.delete('/unsubscribe', checkApiKey('client'), apiController.unsubscribe);
 
 
 // Daily Averages Routes here
-router.get('/averagevalues', checkApiKey('client'), apiController.getDailyAverages);
+router.get('/average', checkApiKey('client'), apiController.getDailyAverages);
 
 
 

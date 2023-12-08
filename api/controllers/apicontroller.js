@@ -500,7 +500,7 @@ const getDailyAverages = async (req, res) => {
 
     if (!device && !dates) {
         return res.status(400).json({
-            message: "Faulty query parameters!",
+            message: "Faulty query parameters!"
         });
     }
 
@@ -519,7 +519,7 @@ const getDailyAverages = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({
-            message: error.message || 'Internal Server Error',
+            message: error.message || 'Internal Server Error'
         });
     }
 }
