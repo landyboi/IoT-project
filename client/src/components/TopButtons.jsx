@@ -16,7 +16,7 @@ function TopButtons({ devices, onSelectDevice }) {
     }, [devices]);
 
     return (
-      <div className="flex items-center justify-around my-6">
+      <div className="flex items-center justify-around py-0 px-50">
           {renderedDevices ? (
             renderedDevices.map((device) => (
                 <button
@@ -29,7 +29,9 @@ function TopButtons({ devices, onSelectDevice }) {
             ))
           ) : (
               <div>
-                  <h1>Loading...</h1>
+                  <h1 className="flex flex-row items-center justify-center space-x-2 text-white text-sm py-3">
+                      Loading...
+                  </h1>
               </div>
           )}
       </div>

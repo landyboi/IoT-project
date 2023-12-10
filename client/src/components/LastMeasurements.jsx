@@ -4,7 +4,7 @@ import warmIcon from '../assets/weather-icons/warm.png';
 import mildIcon from '../assets/weather-icons/mild.png';
 import coldIcon from '../assets/weather-icons/cold.png';
 
-function AverageTemperatures({ selectedDevice } ) {
+function LastMeasurements({ selectedDevice } ) {
     const [measurements, setMeasurements] = useState(null);
     const [error, setError] = useState(false);
 
@@ -13,8 +13,8 @@ function AverageTemperatures({ selectedDevice } ) {
             if (selectedDevice) {
                 const result = await getLast5MeasurementsForDevice(selectedDevice.id)
 
-                setMeasurements(result);
-                setError(validateData(result));
+                setMeasurements(result.data);
+                setError(validateData(result.data));
             }
         } catch (error) {
             setError(true);
@@ -91,4 +91,4 @@ function AverageTemperatures({ selectedDevice } ) {
     );
 }
 
-export default AverageTemperatures;
+export default LastMeasurements;

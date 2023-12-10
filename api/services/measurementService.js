@@ -73,6 +73,25 @@ const deleteMeasurement = async (id) => {
 };
 
 
+const getLast5MeasurementsFromDevice = async (id) => {
+    try {
+        const result = await Measurements.findAll({
+            where: { device: id },
+            order: [['measuredAt', 'DESC']],
+            limit: 5
+        });
+
+        if (result.length === 0) {
+            return { success: false, message: 'No measurements found!' };
+        }
+
+        return { success: true, data: result };
+    } catch (error) {
+        throw new Error('Error searching the database!');
+    }
+}
+
+
 const getLast30DaysMeasurements = async () => {
     try {
         const date = moment().subtract(30, 'days').toDate();
@@ -250,6 +269,7 @@ module.exports = {
     getMeasurements,
     storeMeasurement,
     deleteMeasurement,
+    getLast5MeasurementsFromDevice,
     getLast30DaysMeasurements,
     getLast60DaysMeasurements,
     getLast120DaysMeasurements,

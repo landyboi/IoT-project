@@ -5,18 +5,20 @@ import {
   UilWind,
 } from "@iconscout/react-unicons";
 import { getLatestMeasurementFromDevice } from "../api";
+import moment from "moment";
 
 
 function TemperatureAndDetails({ selectedDevice }) {
   const [measurement, setMeasurement] = useState(null);
   const [error, setError] = useState(false);
-
+  const [measuredAt, setMeasuredAt] = useState("unknown");
   const fetchData = useCallback(async () => {
     try {
       if (selectedDevice) {
         const result = await getLatestMeasurementFromDevice(selectedDevice.id);
 
         setMeasurement(result.data);
+        setMeasuredAt(moment(result.data.measuredAt).format('MMMM Do YYYY, h:mm'));
       }
     } catch (error) {
         setError(true);
@@ -43,8 +45,10 @@ function TemperatureAndDetails({ selectedDevice }) {
             </div>
         ) : measurement ? (
             <div>
-              <div className="flex items-center justify-center py-6 text-xl text-cyan-300">
-                <p>CURRENT WEATHER:</p>
+              <div>
+                <p className="flex justify-center py-6 text-xl text-cyan-300">LATEST MEASUREMENT:</p>
+                <p className="flex justify-center text-cyan-300"> Measured at: {measuredAt}</p>
+                <br/>
               </div>
 
               <div className="flex flex-row items-center justify-center text-white py-3">

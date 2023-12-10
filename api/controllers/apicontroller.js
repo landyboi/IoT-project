@@ -121,6 +121,38 @@ const deleteMeasurement = async (req, res) => {
 };
 
 
+const getLast5MeasurementsFromDevice = async (req, res) => {
+    const id = req.query.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+
+    try {
+        const result = await measurementService.getLast5MeasurementsFromDevice(id);
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json(
+            {
+                message: "Database search completed successfully!",
+                data: result.data
+            }
+        );
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
+        });
+    }
+}
+
+
 const getLast30DaysMeasurements = async (req, res) => {
     try {
         const result = await measurementService.getLast30DaysMeasurements();
@@ -486,23 +518,23 @@ const getSubscriptions = async (req, res) => {
 
 
 const subscribe = async (req, res) => {
-    const device = req.query.device;
-    const email = req.query.email;
+    const device = req.body.device;
+    const email = req.body.email;
 
     if (!device || !email) {
         return res.status(400).json({
-            message: "Faulty query parameters!",
+            message: "Faulty query parameters!"
         });
     }
 
     try {
-        const ip = req.headers['x-forwarded-for'] || undefined;
+        const ip = req.headers['x-forwarded-for'] || req.ip;
 
         const result = await subscriberService.subscribe(email, device, ip);
 
         if (!result.success) {
             return res.status(404).json({
-                message: result.message,
+                message: result.message
             });
         }
 
@@ -512,7 +544,7 @@ const subscribe = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({
-            message: error.message || 'Internal Server Error',
+            message: error.message || 'Internal Server Error'
         });
     }
 }
@@ -603,6 +635,7 @@ module.exports = {
     getMeasurements,
     storeMeasurement,
     deleteMeasurement,
+    getLast5MeasurementsFromDevice,
     getLast30DaysMeasurements,
     getLast60DaysMeasurements,
     getLast120DaysMeasurements,
