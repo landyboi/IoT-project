@@ -53,7 +53,7 @@ async function sendTemplateEmail(to, subject, templateId, data) {
             return EmailTemplates["+5"];
         } else if (temperature <= -5 && temperature > -15) {
             return EmailTemplates["-5"];
-        } else {
+        } else if (temperature <= -15) {
             return EmailTemplates["-15"];
         }
     };

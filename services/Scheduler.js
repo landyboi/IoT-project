@@ -1,16 +1,15 @@
 const schedule = require('node-schedule');
-const { sendDailyWeatherEmail } = require('./emailService');
+const { sendDailyWeatherEmail } = require('./eventService');
 
-const rule = new schedule.RecurrenceRule();
+const dailyWeatherEmail = new schedule.RecurrenceRule();
 
-rule.hour = 7;
+dailyWeatherEmail.hour = 5;
+
 
 function main() {
     console.log('Starting scheduler...');
 
-    schedule.scheduleJob(rule, function () {
-        sendDailyWeatherEmail();
-    });
+    schedule.scheduleJob(dailyWeatherEmail, sendDailyWeatherEmail);
 }
 
 main();

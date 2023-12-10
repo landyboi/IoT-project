@@ -4,6 +4,8 @@ const { sendTemplateEmail } = require("./emailService");
 
 
 const sendDailyWeatherEmail = async () => {
+    console.log('Sending daily weather email...')
+
     const latestMeasurements = {};
 
     try {
@@ -21,7 +23,9 @@ const sendDailyWeatherEmail = async () => {
                     data = result;
                 }
 
-                await sendTemplateEmail(subscriber.email, 'Weather', 'd-663d7909b55f4ee98368c236e79b2dbb', data)
+                if (data) {
+                    await sendTemplateEmail(subscriber.email, 'Weather', 'd-663d7909b55f4ee98368c236e79b2dbb', data)
+                }
             }
         }
     } catch (error) {
