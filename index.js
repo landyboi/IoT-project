@@ -14,6 +14,13 @@ app.use(bodyParser.json());
 
 
 
+/////////////////////
+//Routers are here//
+////////////////////
+app.use('/api', apiRouter);
+
+
+
 ///////////////////////////
 //Frontend stuff is here//
 //////////////////////////
@@ -22,13 +29,6 @@ app.use(express.static(path.join(__dirname, '/client/build')));
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/client/build', 'index.html'));
 });
-
-
-
-/////////////////////
-//Routers are here//
-////////////////////
-app.use('/api', apiRouter);
 
 
 
