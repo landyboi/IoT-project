@@ -40,7 +40,7 @@ const subscribe = async (email, device, ip) => {
         if (!deviceResult) {
             return {success: false, message: "Device not found!"}
         }
-        ip = "172.168.1.1";
+
         const result = await Subscribers.create({
             email: email,
             ip_address: ip,
