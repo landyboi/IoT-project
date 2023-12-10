@@ -2,12 +2,13 @@ const express = require('express');
 const app = express()
 const path = require('path');
 const port = 3000;
+const cors = require('cors');
 import ('./services/Scheduler.js')
 const { sequelize } = require('./models')
 const apiRouter = require('./api/routes/routes')
 const bodyParser = require('body-parser')
 
-
+app.use(cors());
 
 //Make it possible to read the body of the request.
 app.use(bodyParser.json());
