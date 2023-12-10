@@ -20,9 +20,7 @@ const getSubscribersForDevice = async (device) => {
     try {
         const subscribers = await Subscribers.findAll({where: {device: device, deletedAt: null}});
 
-        const subscriberEmails = subscribers.map(subscriber => subscriber.email);
-
-        return subscriberEmails
+        return subscribers;
     } catch (error) {
         throw new Error("Error searching the database!");
     }

@@ -23,6 +23,7 @@
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
     "mysql": "^2.18.1",
+    "node-schedule": "^2.1.1",
     "path": "^0.12.7",
     "process": "^0.11.10",
     "sequelize": "^6.33.0",
