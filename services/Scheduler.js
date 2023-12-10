@@ -6,6 +6,8 @@ const rule = new schedule.RecurrenceRule();
 rule.hour = 7;
 
 function main() {
+    console.log('Starting scheduler...');
+
     schedule.scheduleJob(rule, function () {
         sendDailyWeatherEmail();
     });

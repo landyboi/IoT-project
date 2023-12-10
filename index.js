@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express()
 const port = 3000;
+import ('./services/Scheduler.js')
 const { sequelize } = require('./models')
 const apiRouter = require('./api/routes/routes')
 const bodyParser = require('body-parser')

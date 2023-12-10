@@ -34,6 +34,7 @@ async function sendEmail(to, subject, text) {
     }
 }
 
+
 async function sendTemplateEmail(to, subject, templateId, data) {
     if (typeof to !== 'string') {
         throw new Error('Invalid recipient email!')
@@ -43,14 +44,34 @@ async function sendTemplateEmail(to, subject, templateId, data) {
         throw new Error('Invalid subject!')
     }
 
+    const temperature = data.temperature;
+
+    const selectEmailTemplate = (temperature) => {
+        if (temperature >= 15) {
+            return EmailTemplates["+15"];
+        } else if (temperature >= 5 && temperature < 15) {
+            return EmailTemplates["+5"];
+        } else if (temperature <= -5 && temperature > -15) {
+            return EmailTemplates["-5"];
+        } else {
+            return EmailTemplates["-15"];
+        }
+    };
+
+
     const message = {
         to: to,
         from: 'tuomas.mellin@metropolia.fi',
         subject: subject,
-        template_id: templateId,
+        template_id: selectEmailTemplate(temperature),
         dynamic_template_data:
             {
-                "TODAY": "TÄMÄ ON TESTI"
+                "FirstName": "Timi",
+                "temperature": temperature,
+                "humidity": data.humidity,
+                "airpressure": data.airpressure,
+                "device": data.device,
+                "dewpoint": data.dewpoint
             }
     }
 
@@ -61,6 +82,16 @@ async function sendTemplateEmail(to, subject, templateId, data) {
         throw new Error(error);
     }
 }
+
+
+
+const EmailTemplates = {
+    "+15": "d-4d04fa370b2340f99a3126ce91c0d776",
+    "+5": "d-e19314fce5b14255800865beb83ea33f",
+    "-5": "d-b5a32b9b7f8f47e887b16ccede51f6ce",
+    "-15": "d-4a1c78e424fe461f8f2613185d78694a"
+}
+
 
 
 module.exports = { sendEmail, sendTemplateEmail }

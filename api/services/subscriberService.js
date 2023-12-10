@@ -20,9 +20,7 @@ const getSubscribersForDevice = async (device) => {
     try {
         const subscribers = await Subscribers.findAll({where: {device: device, deletedAt: null}});
 
-        const subscriberEmails = subscribers.map(subscriber => subscriber.email);
-
-        return subscriberEmails
+        return subscribers;
     } catch (error) {
         throw new Error("Error searching the database!");
     }
@@ -42,7 +40,7 @@ const subscribe = async (email, device, ip) => {
         if (!deviceResult) {
             return {success: false, message: "Device not found!"}
         }
-
+        ip = "172.168.1.1";
         const result = await Subscribers.create({
             email: email,
             ip_address: ip,
