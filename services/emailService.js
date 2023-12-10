@@ -66,7 +66,6 @@ async function sendTemplateEmail(to, subject, templateId, data) {
         template_id: selectEmailTemplate(temperature),
         dynamic_template_data:
             {
-                "FirstName": "Timi",
                 "temperature": temperature,
                 "humidity": data.humidity,
                 "airpressure": data.airpressure,
