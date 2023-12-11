@@ -1,4 +1,4 @@
-// RUN THE SCRIPT BY RUNNING: node dropAllMeasurements.js
+// RUN THE SCRIPT BY RUNNING: node dropAllAverageMeasurements.js
 
 const mysql = require('mysql');
 const dotenv = require('dotenv');
@@ -24,13 +24,13 @@ connection.connect((err) => {
         return;
     }
 
-    const dropMeasurements = 'DELETE * FROM Measurements';
+    const dropMeasurements = 'DELETE * FROM average_measurements';
 
     connection.query(dropMeasurements, (dropErr) => {
         if (dropErr) {
-            console.error('Error dropping all data from Measurements', dropErr);
+            console.error('Error dropping all data from average_measurements', dropErr);
         } else {
-            console.log('All data from Measurements dropped successfully');
+            console.log('All data from average measurements dropped successfully');
         }
     });
 
