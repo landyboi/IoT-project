@@ -24,7 +24,7 @@ connection.connect((err) => {
         return;
     }
 
-    const dropMeasurements = 'DELETE * FROM Measurements';
+    const dropMeasurements = 'TRUNCATE TABLE Measurements';
 
     connection.query(dropMeasurements, (dropErr) => {
         if (dropErr) {

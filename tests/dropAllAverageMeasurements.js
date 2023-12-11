@@ -24,13 +24,13 @@ connection.connect((err) => {
         return;
     }
 
-    const dropMeasurements = 'DELETE * FROM average_measurements';
+    const dropMeasurements = 'TRUNCATE TABLE daily_averages';
 
     connection.query(dropMeasurements, (dropErr) => {
         if (dropErr) {
-            console.error('Error dropping all data from average_measurements', dropErr);
+            console.error('Error dropping all data from daily_averages', dropErr);
         } else {
-            console.log('All data from average measurements dropped successfully');
+            console.log('All data from daily averages dropped successfully');
         }
     });
 
