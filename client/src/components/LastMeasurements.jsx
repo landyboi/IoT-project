@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { getLast5MeasurementsForDevice } from "../api";
+import moment from "moment/moment";
 import warmIcon from '../assets/weather-icons/warm.png';
 import mildIcon from '../assets/weather-icons/mild.png';
 import coldIcon from '../assets/weather-icons/cold.png';
+
 
 function LastMeasurements({ selectedDevice } ) {
     const [measurements, setMeasurements] = useState(null);
@@ -26,14 +28,10 @@ function LastMeasurements({ selectedDevice } ) {
         fetchData();
     }, [fetchData]);
 
-    useEffect(() => {
-        setMeasurements(null);
-        setError(false);
-    }, [selectedDevice]);
-
     function validateData(data) {
         return data.every(item => item === null);
     }
+
 
     return (
         <div>
@@ -52,6 +50,7 @@ function LastMeasurements({ selectedDevice } ) {
                 {measurements ? (
                     measurements.map((item, index) => (
                         <div key={index} className="flex flex-col items-center justify-center">
+                            <p className="text-white font-light text-xs"> {item ? `${moment.utc(item.measuredAt).format('HH:mm')}` : ''} </p>
                             <p className="text-white font-medium text-sm">
                                 {item ? `${item.temperature} °C` : 'unknown'}
                             </p>

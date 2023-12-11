@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 
 function TopButtons({ devices, onSelectDevice }) {
     const [renderedDevices, setRenderedDevices] = useState(null);
@@ -7,13 +7,17 @@ function TopButtons({ devices, onSelectDevice }) {
         onSelectDevice(device);
     };
 
-    useEffect(() => {
+    const shuffledDevices = useMemo(() => {
         if (devices && devices.length > 0) {
-            const shuffledDevices = devices.sort(() => Math.random() - 0.5);
-            const selectedDevices = shuffledDevices.slice(0, 3);
-            setRenderedDevices(selectedDevices);
+            return devices.slice().sort(() => Math.random() - 0.5);
         }
+        return [];
     }, [devices]);
+
+    useEffect(() => {
+        const selectedDevices = shuffledDevices.slice(0, 3);
+        setRenderedDevices(selectedDevices);
+    }, [shuffledDevices]);
 
     return (
       <div className="flex items-center justify-around py-0 px-50">

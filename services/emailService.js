@@ -58,12 +58,20 @@ async function sendTemplateEmail(to, subject, templateId, data) {
         }
     };
 
+    const emailTemplate = selectEmailTemplate(temperature);
+
+    if (!emailTemplate) {
+        console.log('No email template found for temperature ' + temperature + "! Error sending email to: " + to);
+        return
+    }
+
+    console.log('Sending daily weather email to ' + to);
 
     const message = {
         to: to,
         from: 'tuomas.mellin@metropolia.fi',
         subject: subject,
-        template_id: selectEmailTemplate(temperature),
+        template_id: emailTemplate,
         dynamic_template_data:
             {
                 "temperature": temperature,
