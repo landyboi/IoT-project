@@ -1,22 +1,8 @@
-const { EventEmitter } = require('events');
-const eventEmitter = new EventEmitter();
-const { sendWeatherEmail } = require("../../services/eventService");
 const measurementService = require("../services/measurementService");
 const subscriberService = require("../services/subscriberService");
 const deviceService = require("../services/deviceService");
 const electricityPriceService = require("../services/electricityPriceService");
 const dailyAverageService = require("../services/dailyAverageService");
-
-// EVENTS HERE!
-//////////////////////////////////////////////////////////////////////////////////////
-eventEmitter.on('newMeasurement', async (data) => {
-    data = data.data.dataValues;
-
-    if (data.temperature <= -5) {
-        sendWeatherEmail(data);
-    }
-});
-//////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -652,6 +638,5 @@ module.exports = {
     subscribe,
     unsubscribe,
     isElectricityPriceHigh,
-    getDailyAverages,
-    eventEmitter
+    getDailyAverages
 }
