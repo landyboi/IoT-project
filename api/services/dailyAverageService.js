@@ -72,6 +72,7 @@ const calculateDailyAverages = async (device, date) => {
         const averageDewpoint = calculateAverage(totalDewpoint, measurementsLength);
 
         const averageValues = {
+            date: date,
             averageTemperature: averageTemperature,
             averageHumidity: averageHumidity,
             averageAirpressure: averageAirpressure,

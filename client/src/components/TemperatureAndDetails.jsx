@@ -12,13 +12,14 @@ function TemperatureAndDetails({ selectedDevice }) {
   const [measurement, setMeasurement] = useState(null);
   const [error, setError] = useState(false);
   const [measuredAt, setMeasuredAt] = useState("unknown");
+
   const fetchData = useCallback(async () => {
     try {
       if (selectedDevice) {
         const result = await getLatestMeasurementFromDevice(selectedDevice.id);
-
         setMeasurement(result.data);
-        setMeasuredAt(moment(result.data.measuredAt).format('MMMM Do YYYY, h:mm'));
+        setMeasuredAt(moment.utc(result.data.measuredAt).format('MMMM Do YYYY, HH:mm'));
+        setError(false);
       }
     } catch (error) {
         setError(true);
@@ -30,19 +31,13 @@ function TemperatureAndDetails({ selectedDevice }) {
     fetchData();
   }, [fetchData]);
 
-  useEffect(() => {
-    setMeasurement(null);
-    setError(false);
-  }, [selectedDevice]);
 
   return (
       <div>
         {error ? (
-            <div>
               <h1 className="flex flex-row items-center justify-center space-x-2 text-white text-sm py-3">
                 No data found!
               </h1>
-            </div>
         ) : measurement ? (
             <div>
               <div>

@@ -85,6 +85,14 @@ const getLast5MeasurementsFromDevice = async (id) => {
             return { success: false, message: 'No measurements found!' };
         }
 
+        const countryCode = await Devices.findByPk(id).then(device => device.country);
+
+        result.forEach(measurement => {
+            if (measurement.measuredAt !== null) {
+                measurement.measuredAt = returnTimestampInNewTimezone(measurement.measuredAt, countryCode);
+            }
+        })
+
         return { success: true, data: result };
     } catch (error) {
         throw new Error('Error searching the database!');
@@ -250,12 +258,16 @@ const getLatestMeasurementByDevice = async (id) => {
 try {
         const result = await Measurements.findOne({
             where: { device: id },
-            order: [['createdAt', 'DESC']]
+            order: [['measuredAt', 'DESC']]
         });
 
         if (!result) {
             return { success: false, message: 'No measurements found!' };
         }
+
+        const countryCode = await Devices.findByPk(id).then(device => device.country);
+
+        result.measuredAt = returnTimestampInNewTimezone(result.measuredAt, countryCode);
 
         return { success: true, data: result };
     } catch (error) {

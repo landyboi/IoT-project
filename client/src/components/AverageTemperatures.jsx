@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { getLast5DaysAverageMeasurementsForDevice } from "../api";
+import moment from "moment";
 import warmIcon from '../assets/weather-icons/warm.png';
 import mildIcon from '../assets/weather-icons/mild.png';
 import coldIcon from '../assets/weather-icons/cold.png';
@@ -26,14 +27,10 @@ function AverageTemperatures({ selectedDevice } ) {
         fetchData();
     }, [fetchData]);
 
-    useEffect(() => {
-        setAverages(null);
-        setError(false);
-    }, [selectedDevice]);
-
     function validateData(data) {
         return data.every(item => item === null);
     }
+
 
     return (
         <div>
@@ -52,6 +49,7 @@ function AverageTemperatures({ selectedDevice } ) {
                 {averages ? (
                     averages.map((item, index) => (
                         <div key={index} className="flex flex-col items-center justify-center">
+                            <p className="text-white font-light text-xs"> {item ? `${moment(item.date).format('dddd')}` : ''} </p>
                             <p className="text-white font-medium text-sm">
                                 {item ? `${item.averageTemperature} °C` : 'unknown'}
                             </p>
