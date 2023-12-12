@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Measurement Data Plot</title>
+    <style>
+        canvas{
+            border:40px solid white;
+        }
+        .row{
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+<h1>Measurement Data Plot</h1>
+<p>This page will display a plot of the measurement data.</p>
+
+<div class="row">
+    <div class="col"><button onclick="loadYesterday()">Previous day</button></div>
+    <div class="col"><button onclick="loadToday()">Today</button></div>
+    <div class="col"><button onclick="loadTomorrow()">Next day</button></div>
+</div>
+
+<div style="width:100%;" class="row">
+    <div class="my-4 col"><canvas id="temperature" style="width:100%;max-width:700px"></canvas></div>
+    <div class="my-4 col"><canvas id="humidity" style="width:100%;max-width:700px"></canvas></div>
+    <div class="my-4 col"><canvas id="airpressure" style="width:100%;max-width:700px"></canvas></div>
+</div>
+
+<div class="row">
+    <div class="col"><a href="https://team5.ddns.net/"><button>Return to main page</button></a></div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script>
+
+    async function getValuesForDate(date) {
+        let id = null;
+        const url = window.location.href.split("/");
+        const idIndex = url.indexOf(":id");
+        if (idIndex !== -1 && idIndex < url.length - 1) {
+            id = url[idIndex + 1];
+        }
+
+        id = 1;
+        if (id && date) {
+            const headers = {
+                'key': 'o28AUi64WrTMU9StZpEF9N9YhANr2f'
+            };
+
+            const requestOptions = {
+                method: 'GET',
+                headers: headers
+            };
+
+            const url = `https://team5.ddns.net/api/values/${id}/${date}`;
+            const response = await fetch(url, requestOptions);
+            const data = await response
+
+            return data.json();
+        }
+    }
+
+    let date = new Date();
+
+    async function loadYesterday() {
+        let xaxis = [];
+        let temperature = [];
+        let humidity = [];
+        let airpressure = [];
+        date.setDate(date.getDate() - 1);
+
+        let formattedYesterday = date.toISOString().split('T')[0];
+
+        const values = await getValuesForDate(formattedYesterday)
+
+        length = values?.data.length;
+
+        for (let i = 0; i < length; i++) {
+            xaxis[i] = values.data[i].measuredAt;
+            temperature[i] = values.data[i].temperature;
+            humidity[i] = values.data[i].humidity;
+            airpressure[i] = values.data[i].airpressure;
+        }
+
+        new Chart("temperature", {
+            type: "line",
+            data: {
+                labels: xaxis,
+                datasets: [{
+                    data: temperature,
+                    borderColor: "red",
+                    fill: false
+                },
+                ]},
+            options: {
+                legend: {display: false},
+                title: {
+                    display: true,
+                    text: 'Temperature for ' + formattedYesterday
+                }},
+
+        });
+
+        new Chart("humidity", {
+            type: "line",
+            data: {
+                labels: xaxis,
+                datasets: [{
+                    data: humidity,
+                    borderColor: "blue",
+                    fill: false
+                },
+                ]},
+            options: {
+                legend: {display: false,},
+                title: {
+                    display: true,
+                    text: 'Humidity for ' + formattedYesterday
+                }},
+        });
+
+        new Chart("airpressure", {
+            type: "line",
+            data: {
+                labels: xaxis,
+                datasets: [{
+                    data: airpressure,
+                    borderColor: "green",
+                    fill: false
+                },
+                ]},
+            options: {
+                legend: {display: false},
+                title: {
+                    display: true,
+                    text: 'Airpressure for ' + formattedYesterday
+                }},
+        });
+}
+
+    async function loadToday(){
+        let xaxis = [];
+        let temperature = [];
+        let humidity = [];
+        let airpressure = [];
+        date = new Date();
+        let formattedToday = date.toISOString().split('T')[0];
+
+        const values = await getValuesForDate(formattedToday)
+
+        length = values?.data.length;
+
+        for (let i = 0; i < length; i++) {
+            xaxis[i] = values.data[i].measuredAt;
+            temperature[i] = values.data[i].temperature;
+            humidity[i] = values.data[i].humidity;
+            airpressure[i] = values.data[i].airpressure;
+        }
+
+        new Chart("temperature", {
+            type: "line",
+            data: {
+                labels: xaxis,
+                datasets: [{
+                    data: temperature,
+                    borderColor: "red",
+                    fill: false
+                },
+                ]},
+            options: {
+                legend: {display: false},
+                title: {
+                    display: true,
+                    text: 'Temperature for ' + formattedToday
+                }},
+
+        });
+
+        new Chart("humidity", {
+            type: "line",
+            data: {
+                labels: xaxis,
+                datasets: [{
+                    data: humidity,
+                    borderColor: "blue",
+                    fill: false
+                },
+                ]},
+            options: {
+                legend: {display: false,},
+                title: {
+                    display: true,
+                    text: 'Humidity for ' + formattedToday
+                }},
+        });
+
+        new Chart("airpressure", {
+            type: "line",
+            data: {
+                labels: xaxis,
+                datasets: [{
+                    data: airpressure,
+                    borderColor: "green",
+                    fill: false
+                },
+                ]},
+            options: {
+                legend: {display: false},
+                title: {
+                    display: true,
+                    text: 'Airpressure for ' + formattedToday
+                }},
+        });
+    }
+
+    async function loadTomorrow(){
+        let xaxis = [];
+        let temperature = [];
+        let humidity = [];
+        let airpressure = [];
+        date.setDate(date.getDate() + 1);
+        let formattedTomorrow = date.toISOString().split('T')[0];
+
+        const values = await getValuesForDate(formattedTomorrow)
+
+        length = values?.data.length;
+        
+        for (let i = 0; i < length; i++) {
+            xaxis[i] = values.data[i].measuredAt;
+            temperature[i] = values.data[i].temperature;
+            humidity[i] = values.data[i].humidity;
+            airpressure[i] = values.data[i].airpressure;
+        }
+
+        new Chart("temperature", {
+            type: "line",
+            data: {
+                labels: xaxis,
+                datasets: [{
+                    data: temperature,
+                    borderColor: "red",
+                    fill: false
+                },
+                ]},
+            options: {
+                legend: {display: false},
+                title: {
+                    display: true,
+                    text: 'Temperature for ' + formattedTomorrow
+                }},
+
+        });
+
+        new Chart("humidity", {
+            type: "line",
+            data: {
+                labels: xaxis,
+                datasets: [{
+                    data: humidity,
+                    borderColor: "blue",
+                    fill: false
+                },
+                ]},
+            options: {
+                legend: {display: false,},
+                title: {
+                    display: true,
+                    text: 'Humidity for ' + formattedTomorrow
+                }},
+        });
+
+        new Chart("airpressure", {
+            type: "line",
+            data: {
+                labels: xaxis,
+                datasets: [{
+                    data: airpressure,
+                    borderColor: "green",
+                    fill: false
+                },
+                ]},
+            options: {
+                legend: {display: false},
+                title: {
+                    display: true,
+                    text: 'Airpressure for ' + formattedTomorrow
+                }},
+        });
+    }
+
+</script>
+</body>
+</html>
