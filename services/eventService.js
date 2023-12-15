@@ -1,4 +1,4 @@
-const { getAllSubscribers } = require("../api/services/subscriberService");
+const { getAllSubscribers, getSubscribersForDevice } = require("../api/services/subscriberService");
 const { getLatestMeasurementByDevice } = require("../api/services/measurementService");
 const { sendTemplateEmail } = require("./emailService");
 
@@ -33,7 +33,16 @@ const sendDailyWeatherEmail = async () => {
     }
 }
 
+const sendEventEmail = async (device, event) => {
+    console.log('Sending event email...')
 
+    try {
+
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+}
 module.exports = {
-    sendDailyWeatherEmail
+    sendDailyWeatherEmail,
+    sendEventEmail
 }

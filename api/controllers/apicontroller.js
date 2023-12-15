@@ -64,8 +64,6 @@ const storeMeasurement = async (req, res) => {
             });
         }
 
-        eventEmitter.emit('newMeasurement', result);
-
         return res.status(200).json({
             message: "New measurement added successfully!",
             data: result.data
@@ -363,15 +361,16 @@ const getDevices = async (req, res) => {
 const initializeDevice = async (req, res) => {
     const name = req.query.name;
     const country = req.query.country || 'Finland'
+    const eventSupport = req.query.eventSupport || false;
 
-    if (!name || !country) {
+    if (!name) {
         return res.status(400).json({
             message: "Faulty query parameters!"
         });
     }
 
     try {
-        const result = await deviceService.initializeDevice(name, country);
+        const result = await deviceService.initializeDevice(name, country, eventSupport);
 
         if (!result.success) {
             if (result.message === 'Name already in use!') {
