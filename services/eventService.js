@@ -1,6 +1,9 @@
-const { getAllSubscribers, getSubscribersForDevice } = require("../api/services/subscriberService");
+const { getAllSubscribers } = require("../api/services/subscriberService");
 const { getLatestMeasurementByDevice } = require("../api/services/measurementService");
-const { sendTemplateEmail } = require("./emailService");
+const { sendEmail, sendTemplateEmail } = require("./emailService");
+const { getEventsForDevice } = require("../api/services/eventService");
+
+
 
 
 const sendDailyWeatherEmail = async () => {
@@ -33,16 +36,34 @@ const sendDailyWeatherEmail = async () => {
     }
 }
 
-const sendEventEmail = async (device, event) => {
-    console.log('Sending event email...')
 
+const checkForEvents = async (device, measurement) => {
     try {
+        const events = await getEventsForDevice(device).then(result => result.data);
 
+        if (events) {
+            for (const event of events) {
+                if (event.options !== null) {
+                    const options = event.options;
+                    if (measurement.temperature >= options.goesOver) {
+                        await sendEmail(event.email, 'Temperature is over the limit!', `<h1>Temperature is over ${options.goesOver}</h1>`)
+                    }
+
+                    if (measurement.temperature <= options.goesBelow) {
+                        await sendEmail(event.email, 'Temperature is under the limit!', `<h1>Temperature is under ${options.goesBelow}!</h1>`)
+                    }
+                }
+            }
+        }
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('Error checking for events:', error);
     }
 }
+
+
+
+
 module.exports = {
     sendDailyWeatherEmail,
-    sendEventEmail
+    checkForEvents
 }

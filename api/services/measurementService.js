@@ -2,7 +2,7 @@ const {Measurements, Devices} = require("../../models");
 const moment = require("moment/moment");
 const {Op} = require("sequelize");
 const { modifyTimezone, returnTimestampInNewTimezone } = require("../../services/timezoneModifier");
-const { sendEventEmail } = require("../../services/eventService");
+const { checkForEvents } = require("../../services/eventService");
 
 const getMeasurements = async () => {
     try {
@@ -33,14 +33,6 @@ const storeMeasurement = async (temperature, humidity, airpressure, dewpoint, me
             measuredAt = new Date();
         }
 
-        if (measurementDevice.eventsupport) {
-            try {
-                await sendEventEmail(measurementDevice.id, temperature);
-            } catch (error) {
-                Error(error.message)
-            }
-        }
-
         const result = await Measurements.create({
             temperature: temperature,
             device: measurementDevice.id,
@@ -49,6 +41,14 @@ const storeMeasurement = async (temperature, humidity, airpressure, dewpoint, me
             ...(dewpoint && { dewpoint: dewpoint }),
             measuredAt: measuredAt
         });
+
+        if (measurementDevice.eventsupport) {
+            try {
+                await checkForEvents(measurementDevice.id, result.dataValues);
+            } catch (error) {
+                Error(error.message)
+            }
+        }
 
         if (result) {
             return { success: true, data: result };

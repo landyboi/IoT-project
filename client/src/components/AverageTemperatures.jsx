@@ -51,7 +51,7 @@ function AverageTemperatures({ selectedDevice } ) {
                         <div key={index} className="flex flex-col items-center justify-center">
                             <p className="text-white font-light text-xs"> {item ? `${moment(item.date).format('dddd')}` : ''} </p>
                             <p className="text-white font-medium text-sm">
-                                {item ? `${item.averageTemperature} °C` : 'unknown'}
+                                {item ? `${item.averageTemperature.toFixed(1)} °C` : 'unknown'}
                             </p>
                             {item ? (
                                 item.averageTemperature <= 0 ? (
