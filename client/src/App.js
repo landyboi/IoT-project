@@ -1,37 +1,40 @@
 import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Frontpage from "./views/Frontpage";
+import Subscribe from "./views/Subscribe";
+import Register from "./views/Register";
+import {useEffect, useState} from "react";
+import {getAllDevices} from "./api";
 import TopButtons from "./components/TopButtons";
 import Inputs from "./components/Inputs";
-import TimeAndLocation from "./components/TimeAndLocation";
-import TemperatureAndDetails from "./components/TemperatureAndDetails";
-import AverageTemperatures from "./components/AverageTemperatures";
-import LastMeasurements from "./components/LastMeasurements";
-import { useState, useEffect } from "react";
-import { getAllDevices } from "./api";
 
 function App() {
     const [devices, setDevices] = useState(null);
     const [selectedDevice, setSelectedDevice] = useState(null);
 
     useEffect(() => {
-      const fetchData = async () => {
-        const result = await getAllDevices();
-        setDevices(result);
-        setSelectedDevice(result[0]);
-      }
+        const fetchData = async () => {
+            const result = await getAllDevices();
+            setDevices(result);
+            setSelectedDevice(result[0]);
+        }
         fetchData();
     }, []);
 
   return (
-    <div
-      className="mx-auto max-w-4xl mt-4 py-10 px-32 bg-gradient-to-br from-cyan-700 to-blue-700 h-fit shadow-x1 shadow-gray-400">
-
-        <TopButtons devices={devices} onSelectDevice={setSelectedDevice}/>
-        <Inputs devices={devices} onSelectDevice={setSelectedDevice} selectedDevice={selectedDevice}/>
-        <TimeAndLocation />
-        <TemperatureAndDetails selectedDevice={selectedDevice}/>
-        <LastMeasurements selectedDevice={selectedDevice}/>
-        <AverageTemperatures selectedDevice={selectedDevice}/>
-    </div>
+      <div
+          className="mx-auto max-w-4xl mt-4 py-10 px-32 bg-gradient-to-br from-cyan-700 to-blue-700 h-fit shadow-x1 shadow-gray-400">
+          <Router>
+              <TopButtons devices={devices} onSelectDevice={setSelectedDevice} />
+              <Inputs devices={devices} onSelectDevice={setSelectedDevice} selectedDevice={selectedDevice}/>
+            <Routes>
+                <Route path="/" element={ <Frontpage selectedDevice={selectedDevice}/> } />
+                <Route path="/subscribe" element={ <Subscribe selectedDevice={selectedDevice}/> } />
+                <Route path="/register" element={ <Register /> } />
+                <Route path="*" element={<Frontpage selectedDevice={selectedDevice}/>} />
+            </Routes>
+          </Router>
+      </div>
   );
 }
 

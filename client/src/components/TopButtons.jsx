@@ -1,10 +1,14 @@
 import React, {useEffect, useMemo, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 function TopButtons({ devices, onSelectDevice }) {
     const [renderedDevices, setRenderedDevices] = useState(null);
 
+    const navigate = useNavigate()
+
     const handleSelectDevice = (device) => {
         onSelectDevice(device);
+        navigate('/');
     };
 
     const shuffledDevices = useMemo(() => {

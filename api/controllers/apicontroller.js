@@ -363,12 +363,6 @@ const initializeDevice = async (req, res) => {
     const country = req.body.country || 'Finland'
     const eventSupport = req.body.eventsupport || false;
 
-    if (!name) {
-        return res.status(400).json({
-            message: "Faulty query parameters!"
-        });
-    }
-
     try {
         const result = await deviceService.initializeDevice(name, country, eventSupport);
 
