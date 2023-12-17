@@ -1,4 +1,19 @@
 const { event_subscribers:Events, Devices} = require("../../models");
+const {sendEmail} = require("../../services/emailService");
+
+const getEventsForDevice = async (device) => {
+    try {
+        const result = await Events.findAll({ where: { device: device, deletedAt: null } });
+
+        if (result.length === 0) {
+            return { success: false, message: "No events found!" }
+        }
+
+        return {success: true, data: result}
+    } catch (error) {
+        throw new Error("Error searching the database!");
+    }
+}
 
 
 const createNewEvent = async (email, ip, device, options) => {
@@ -33,21 +48,57 @@ const createNewEvent = async (email, ip, device, options) => {
 }
 
 
-const getEventsForDevice = async (device) => {
+const deleteEvent = async (id) => {
     try {
-        const result = await Events.findAll({ where: { device: device, deletedAt: null } });
+        const event = await Events.findByPk(id);
 
-        if (result.length === 0) {
-            return { success: false, message: "No events found!" }
+        if (!event) {
+            return { success: false, message: 'Event not found!' };
         }
 
-        return {success: true, data: result}
+        event.deletedAt = new Date();
+        await event.save();
+
+        if (event.deletedAt) {
+            return { success: true, message: 'Event deleted successfully!' };
+        }
     } catch (error) {
-        throw new Error("Error searching the database!");
+        throw new Error('Error deleting entry from the database!');
     }
 }
 
+
+const checkForEvents = async (device, measurement) => {
+    try {
+        const events = await getEventsForDevice(device).then(result => result.data);
+
+        if (!events) {
+            console.error('No event subscribers found!')
+            return;
+        }
+
+        for (const event of events) {
+            if (event.options !== null) {
+                const options = event.options;
+                if (measurement.temperature >= options.goesOver) {
+                    await sendEmail(event.email, 'Temperature is over the limit!', `<h1>Temperature is over ${options.goesOver}</h1>`)
+                }
+
+                if (measurement.temperature <= options.goesBelow) {
+                    await sendEmail(event.email, 'Temperature is under the limit!', `<h1>Temperature is under ${options.goesBelow}!</h1>`)
+                }
+            }
+        }
+    } catch (error) {
+        throw new Error('Error checking for events!')
+    }
+}
+
+
+
 module.exports = {
+    getEventsForDevice,
     createNewEvent,
-    getEventsForDevice
+    deleteEvent,
+    checkForEvents
 }
