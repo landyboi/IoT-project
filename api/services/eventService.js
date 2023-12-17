@@ -30,8 +30,6 @@ const createNewEvent = async (email, ip, device, options) => {
             return {success: false, message: "Device not found!"}
         }
 
-        ip = "172.168.1.1";
-
         const result = await Events.create({
             email: email,
             ip_address: ip,
