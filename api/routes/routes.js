@@ -78,4 +78,10 @@ router.post('/average', checkApiKey('client'), apiController.getDailyAverages);
 
 
 
+// Event Routes here
+router.post('/events', checkApiKey('client'), apiController.createNewEvent);
+router.delete('/events', checkApiKey('client'), apiController.deleteEvent);
+
+
+
 module.exports = router;

@@ -17,7 +17,7 @@ const getDevices = async () => {
 }
 
 
-const initializeDevice = async (name, country) => {
+const initializeDevice = async (name, country, eventsupport) => {
     try {
         const nameCheck = await Devices.findOne({ where: { name: name } } );
 
@@ -28,7 +28,7 @@ const initializeDevice = async (name, country) => {
                 return {success: false, message: "Country not found or not supported!"};
             }
 
-            const result = await Devices.create({name: name, uuid: uuidCreator.v4(), country: countryCode});
+            const result = await Devices.create({name: name, uuid: uuidCreator.v4(), country: countryCode, ...(eventsupport && {eventsupport: eventsupport})});
 
             if (result) {
                 return {success: true, data: result};

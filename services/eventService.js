@@ -3,6 +3,7 @@ const { getLatestMeasurementByDevice } = require("../api/services/measurementSer
 const { sendTemplateEmail } = require("./emailService");
 
 
+
 const sendDailyWeatherEmail = async () => {
     console.log('Sending daily weather email...')
 
@@ -32,6 +33,7 @@ const sendDailyWeatherEmail = async () => {
         console.error('Error sending email:', error);
     }
 }
+
 
 
 module.exports = {
