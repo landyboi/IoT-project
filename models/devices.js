@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   Devices.init({
     name: DataTypes.STRING,
     country: DataTypes.CHAR(3),
+    eventsupport: DataTypes.BOOLEAN,
     uuid: DataTypes.UUID,
     deletedAt: DataTypes.DATE
   }, {

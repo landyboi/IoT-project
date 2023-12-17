@@ -3,7 +3,7 @@ const subscriberService = require("../services/subscriberService");
 const deviceService = require("../services/deviceService");
 const electricityPriceService = require("../services/electricityPriceService");
 const dailyAverageService = require("../services/dailyAverageService");
-
+const eventService = require("../services/eventService");
 
 
 // Measurement Related Functions //
@@ -63,8 +63,6 @@ const storeMeasurement = async (req, res) => {
                 message: result.message
             });
         }
-
-        eventEmitter.emit('newMeasurement', result);
 
         return res.status(200).json({
             message: "New measurement added successfully!",
@@ -361,17 +359,18 @@ const getDevices = async (req, res) => {
 
 
 const initializeDevice = async (req, res) => {
-    const name = req.query.name;
-    const country = req.query.country || 'Finland'
+    const name = req.body.name;
+    const country = req.body.country || 'Finland'
+    const eventSupport = req.body.eventsupport || false;
 
-    if (!name || !country) {
+    if (!name) {
         return res.status(400).json({
             message: "Faulty query parameters!"
         });
     }
 
     try {
-        const result = await deviceService.initializeDevice(name, country);
+        const result = await deviceService.initializeDevice(name, country, eventSupport);
 
         if (!result.success) {
             if (result.message === 'Name already in use!') {
@@ -617,6 +616,94 @@ const getDailyAverages = async (req, res) => {
 
 
 
+// Event Related Functions //
+const createNewEvent = async (req, res) => {
+    const email = req.body.email;
+    const device = req.body.device;
+    const goesBelow = req.body.goesBelow;
+    const goesOver = req.body.goesOver;
+
+    if (!email || !device) {
+        return res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+
+    if (goesBelow || goesOver) {
+        if ((goesBelow && isNaN(goesBelow)) || (goesOver && isNaN(goesOver))) {
+            return res.status(400).json({
+                message: "Options must be numbers!"
+            });
+        }
+    }
+
+    try {
+        const ip = req.headers['x-forwarded-for'] || req.ip;
+
+        let options = null;
+
+        if (goesBelow || goesOver) {
+            options = {};
+
+            if (goesBelow) {
+                options.goesBelow = goesBelow;
+            }
+
+            if (goesOver) {
+                options.goesOver = goesOver;
+            }
+        }
+
+        const result = await eventService.createNewEvent(email, ip, device, options);
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json({
+            message: "New event created successfully!",
+            data: result.data
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
+        });
+    }
+}
+
+
+const deleteEvent = async (req, res) => {
+    const id = req.query.id;
+
+    if (!id) {
+        return res.status(400).json({
+            message: "Faulty query parameters!"
+        });
+    }
+
+    try {
+        const result = await eventService.deleteEvent(id);
+
+        if (!result.success) {
+            return res.status(404).json({
+                message: result.message
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Event deleted successfully!'
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error'
+        });
+    }
+}
+
+
+
 module.exports = {
     getMeasurements,
     storeMeasurement,
@@ -638,5 +725,7 @@ module.exports = {
     subscribe,
     unsubscribe,
     isElectricityPriceHigh,
-    getDailyAverages
+    getDailyAverages,
+    createNewEvent,
+    deleteEvent
 }
