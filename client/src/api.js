@@ -2,7 +2,7 @@ import axios from 'axios';
 import moment from "moment";
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000/api',
+    baseURL: 'https://team5.ddns.net/api',
     headers: {
         'Content-Type': 'application/json',
         'key': 'o28AUi64WrTMU9StZpEF9N9YhANr2f'
