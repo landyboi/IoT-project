@@ -6,6 +6,7 @@ import {useNavigate} from "react-router-dom";
 function Register () {
     const [deviceName, setDeviceName] = useState("");
     const [deviceCountry, setDeviceCountry] = useState("");
+    const [isEventDevice, setIsEventDevice] = useState(false);
 
     const navigate = useNavigate()
 
@@ -20,10 +21,11 @@ function Register () {
 
     const handleRegister = async () => {
         if (deviceName && deviceCountry) {
-            const result = await registerDevice(deviceName, deviceCountry)
+            const result = await registerDevice(deviceName, deviceCountry, isEventDevice)
 
             if (result) {
                 alert("Device registered successfully!");
+                alert("Your device uuid is: " + result.data.uuid);
                 setDeviceName("");
                 setDeviceCountry("");
             } else if (result.status === 404) {
@@ -41,6 +43,10 @@ function Register () {
     const handleReturn = () => {
         navigate('/');
     }
+
+    const handleCheckboxChange = (event) => {
+        setIsEventDevice(event.target.checked);
+    };
 
     return (
         <div className="flex flex-col items-center justify-center">
@@ -62,12 +68,19 @@ function Register () {
                     name="country"
                     value={deviceCountry}
                     onChange={handleInputChange}
-                    placeholder="Type device name..."
+                    placeholder="Type device country..."
                     className="px-2 py-1 bg-gray-200 rounded-md"
                 />
             </div>
+            <div className="flex mb-4 items-center">
+                <label htmlFor="event" className="flex items-center cursor-pointer">
+                    <input type="checkbox" id="event" name="event" className="form-checkbox h-5 w-5 text-blue-500" checked={isEventDevice} onChange={handleCheckboxChange}/>
+                    <span className="ml-2 text-white">Device is event specific</span>
+                </label>
+            </div>
             <div>
-                <ThunderstormButton disabled={!deviceName || !deviceCountry} onClick={handleRegister} label={"Register"}/>
+                <ThunderstormButton disabled={!deviceName || !deviceCountry} onClick={handleRegister}
+                                    label={"Register"}/>
                 <ThunderstormButton onClick={handleReturn} label={"Back to Frontpage"} type={"returnButton"}/>
             </div>
         </div>

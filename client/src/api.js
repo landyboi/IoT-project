@@ -2,7 +2,7 @@ import axios from 'axios';
 import moment from "moment";
 
 const api = axios.create({
-    baseURL: 'https://team5.ddns.net/api',
+    baseURL: 'http://localhost:3000/api',
     headers: {
         'Content-Type': 'application/json',
         'key': 'o28AUi64WrTMU9StZpEF9N9YhANr2f'
@@ -79,11 +79,12 @@ export const subscribe = async (device, email) => {
     }
 }
 
-export const registerDevice = async (name, country) => {
+export const registerDevice = async (name, country, eventsupport) => {
     try {
         const result = await api.post('/devices/initialize', {
             name: name,
-            country: country
+            country: country,
+            ...(eventsupport && { eventsupport: true })
         })
 
         return result.data

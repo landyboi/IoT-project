@@ -66,6 +66,7 @@ function Subscribe({ selectedDevice }) {
                 </div>
             ) : (
                 <>
+                    <p className="flex mb-10 mt-5 items-center text-gray-200 bold"> This device is event specific device. Define options below: </p>
                     <div className="flex mb-4 items-center">
                         <p className="text-white text-lg font-light flex-shrink-0 w-60 mr-2">Temperature goes below:</p>
                         <input
