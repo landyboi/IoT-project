@@ -78,3 +78,16 @@ export const subscribe = async (device, email) => {
         return error.response;
     }
 }
+
+export const registerDevice = async (name, country) => {
+    try {
+        const result = await api.post('/devices/initialize', {
+            name: name,
+            country: country
+        })
+
+        return result.data
+    } catch (error) {
+        return error.response
+    }
+}

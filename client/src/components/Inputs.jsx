@@ -1,11 +1,20 @@
 import Selector from "./DeviceSelector";
-import Subscribe from "./Subscribe";
-import React from "react";
+import ThunderstormButton from "./ThunderstormButton";
+import { useNavigate } from 'react-router-dom';
 
 function Inputs({ devices, onSelectDevice, selectedDevice }) {
+    const navigate = useNavigate()
+
+    const redirectToSubscribing = () => {
+        navigate('/subscribe');
+    };
+
+    const redirectToRegistering = () => {
+        navigate('/register');
+    };
 
     const redirectToPlotting = () => {
-        window.location.href = `/plot.html?id=${selectedDevice.id}`;
+        navigate(`/plot.html?id=${selectedDevice.id}`);
     };
 
   return (
@@ -15,11 +24,9 @@ function Inputs({ devices, onSelectDevice, selectedDevice }) {
                   <Selector devices={devices} onSelectDevice={onSelectDevice}/>
           </div>
           <div className="flex flex-row ml-0">
-                  <Subscribe selectedDevice={selectedDevice}/>
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
-                          onClick={redirectToPlotting}
-                  > Graph
-                  </button>
+              <ThunderstormButton disabled={!selectedDevice} onClick={redirectToSubscribing} label={"Subscribe"}/>
+              <ThunderstormButton disabled={!selectedDevice} onClick={redirectToRegistering} label={"Register"}/>
+              <ThunderstormButton disabled={!selectedDevice} onClick={redirectToPlotting} label={"Plot"}/>
           </div>
       </div>
 
