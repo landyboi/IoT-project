@@ -6,11 +6,13 @@ import {useNavigate} from "react-router-dom";
 function Subscribe({ selectedDevice }) {
     const [email, setEmail] = useState("");
     const [deviceType, setDeviceType] = useState("default");
+    const [temperatureBelow, setTemperatureBelow] = useState("");
+    const [temperatureOver, setTemperatureOver] = useState("");
 
     const navigate = useNavigate()
 
     useEffect(() => {
-        const DeviceType = "default"
+        const DeviceType = "sef"
         setDeviceType(DeviceType);
     }, [selectedDevice]);
 
@@ -18,8 +20,10 @@ function Subscribe({ selectedDevice }) {
         const { name, value } = event.target;
         if (name === "email") {
             setEmail(value);
-        } else if (name === "below" || name === "over") {
-            setDeviceType(value);
+        } else if (name === "below") {
+            setTemperatureBelow(value);
+        } else if (name === "over") {
+            setTemperatureOver(value);
         }
     };
 
@@ -66,11 +70,13 @@ function Subscribe({ selectedDevice }) {
                 </div>
             ) : (
                 <>
-                    <p className="flex mb-10 mt-5 items-center text-gray-200 bold"> This device is event specific device. Define options below: </p>
+                    <p className="flex mb-10 mt-5 items-center text-gray-200 bold"> This device is event specific device  |  Define options below: </p>
                     <div className="flex mb-4 items-center">
                         <p className="text-white text-lg font-light flex-shrink-0 w-60 mr-2">Temperature goes below:</p>
                         <input
                             type="text"
+                            name="below"
+                            value={temperatureBelow}
                             onChange={handleInputChange}
                             placeholder="Type temperature..."
                             className="px-2 py-1 bg-gray-200 rounded-md flex-grow"
@@ -80,12 +86,14 @@ function Subscribe({ selectedDevice }) {
                         <p className="text-white text-lg font-light flex-shrink-0 w-60 mr-2">Temperature goes over:</p>
                         <input
                             type="text"
+                            name="over"
+                            value={temperatureOver}
                             onChange={handleInputChange}
                             placeholder="Type temperature..."
                             className="px-2 py-1 bg-gray-200 rounded-md flex-grow"
                         />
                     </div>
-                    <ThunderstormButton disabled={!email} onClick={handleEventSubscription} label={"Submit"}/>
+                    <ThunderstormButton disabled={!email || !(temperatureBelow || temperatureOver)} onClick={handleEventSubscription} label={"Submit"}/>
                     <ThunderstormButton onClick={handleReturn} label={"Back to Frontpage"} type={"returnButton"}/>
                 </>
             )}
