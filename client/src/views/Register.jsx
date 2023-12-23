@@ -20,25 +20,34 @@ function Register () {
     };
 
     const handleRegister = async () => {
-        if (deviceName && deviceCountry) {
-            const result = await registerDevice(deviceName, deviceCountry, isEventDevice)
-
-            if (result) {
-                alert("Device registered successfully!");
-                alert("Your device uuid is: " + result.data.uuid);
-                setDeviceName("");
-                setDeviceCountry("");
-            } else if (result.status === 404) {
-                alert(result.data.message || "Country not found or supported!");
-                setDeviceCountry("")
-            } else if (result.data.message === "Name already in use!") {
-                alert(result.data.message || "Name already in use!");
-                setDeviceName("")
-            } else {
-                alert("Error registering device. Try again.");
-            }
+        if (!deviceName || !deviceCountry) {
+            alert("Please provide device name and country.");
+            return;
         }
-    }
+
+        try {
+            const result = await registerDevice(deviceName, deviceCountry, isEventDevice);
+
+            if (!result || result.error) {
+                const errorMessage = result?.message || 'Error registering device. Try again.';
+                if (result?.status === 404) {
+                    setDeviceCountry("");
+                } else if (result?.message === "Name already in use!") {
+                    setDeviceName("");
+                }
+                alert(errorMessage);
+                return;
+            }
+
+            alert("Device registered successfully!");
+            alert("Your device uuid is: " + result.data.uuid);
+            setDeviceName("");
+            setDeviceCountry("");
+            setIsEventDevice(false);
+        } catch {
+            alert("Error registering device. Try again.");
+        }
+    };
 
     const handleReturn = () => {
         navigate('/');

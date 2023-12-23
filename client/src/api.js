@@ -18,7 +18,7 @@ export const getLatestMeasurementFromDevice = async (device) => {
     });
 
     return result.data.data;
-}
+};
 
 
 export const getAllDevices = async () => {
@@ -73,11 +73,38 @@ export const subscribe = async (device, email) => {
             email: email
         });
 
-        return result.status;
+        return result.data;
     } catch (error) {
-        return error.response;
+        if (error.response) {
+            const { status, data: { message = 'Error subscribing to device' } = {} } = error.response;
+            return { error: true, status, message };
+        } else {
+            return { error: true, message: 'An unexpected error occurred.' };
+        }
     }
-}
+};
+
+
+export const subscribeToEvent = async (device, email, goesOver, goesBelow) => {
+    try {
+        const result = await api.post('/events', {
+            device,
+            email,
+            ...(goesOver && { goesOver: goesOver }),
+            ...(goesBelow && { goesBelow: goesBelow })
+        });
+
+        return result.data;
+    } catch (error) {
+        if (error.response) {
+            const { status, data: { message = 'Error subscribing to device' } = {} } = error.response;
+            return { error: true, status, message };
+        } else {
+            return { error: true, message: 'An unexpected error occurred.' };
+        }
+    }
+};
+
 
 export const registerDevice = async (name, country, eventsupport) => {
     try {
@@ -85,10 +112,15 @@ export const registerDevice = async (name, country, eventsupport) => {
             name: name,
             country: country,
             ...(eventsupport && { eventsupport: true })
-        })
+        });
 
-        return result.data
+        return result.data;
     } catch (error) {
-        return error.response
+        if (error.response) {
+            const { status, data: { message = 'Unknown error occurred' } = {} } = error.response;
+            return { error: true, status, message };
+        } else {
+            return { error: true, message: 'An unexpected error occurred.' };
+        }
     }
-}
+};

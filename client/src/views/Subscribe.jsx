@@ -1,19 +1,24 @@
-import { subscribe } from "../api";
+import {subscribe, subscribeToEvent} from "../api";
 import {useEffect, useState} from "react";
 import ThunderstormButton from "../components/ThunderstormButton";
 import {useNavigate} from "react-router-dom";
 
 function Subscribe({ selectedDevice }) {
     const [email, setEmail] = useState("");
-    const [deviceType, setDeviceType] = useState("default");
+    const [deviceType, setDeviceType] = useState("");
     const [temperatureBelow, setTemperatureBelow] = useState("");
     const [temperatureOver, setTemperatureOver] = useState("");
 
     const navigate = useNavigate()
 
     useEffect(() => {
-        const DeviceType = "default";
-        setDeviceType(DeviceType);
+        if (selectedDevice && selectedDevice.eventsupport) {
+            const DeviceType = "event";
+            setDeviceType(DeviceType);
+        } else {
+            const DeviceType = "default";
+            setDeviceType(DeviceType);
+        }
     }, [selectedDevice]);
 
     const handleInputChange = (event) => {
@@ -28,22 +33,63 @@ function Subscribe({ selectedDevice }) {
     };
 
     const handleSubscription = async () => {
-        if (email) {
-            const formattedEmail = email.split(" ").join("").toLowerCase();
+        if (!email) {
+            return alert("Please provide a valid email.");
+        }
+
+        const formattedEmail = email.split(" ").join("").toLowerCase();
+
+        try {
             const result = await subscribe(selectedDevice.id, formattedEmail);
 
-            if (result === 200) {
-                alert(`Successfully subscribed to ${selectedDevice.name}`);
-            } else if (result.status === 404) {
-                alert(result.data.message || "Error subscribing to device");
-            } else {
-                alert("Error subscribing to device. Try again.");
+            if (!result || result.error) {
+                const errorMessage = result?.message || 'Error subscribing to device';
+
+                if (result?.status === 404) {
+                    alert(errorMessage);
+                } else {
+                    alert("Error subscribing to device. Try again.");
+                }
+                return;
             }
+
+            setEmail("")
+            alert(`Successfully subscribed to ${selectedDevice.name}`);
+        } catch {
+            alert("Error subscribing to device. Try again.");
         }
     };
 
     const handleEventSubscription = async () => {
-        // HANDLE EVENT SUBSCRIPTION
+        if (!email) {
+            return alert("Please provide a valid email.");
+        }
+
+        const formattedEmail = email.split(" ").join("").toLowerCase();
+
+        try {
+            const result = await subscribeToEvent(selectedDevice.id, formattedEmail, temperatureOver, temperatureBelow);
+
+            if (!result || result.error) {
+                const errorMessage = result?.message || 'Error subscribing to device';
+
+                if (result?.status === 404) {
+                    alert(errorMessage);
+                } else if (result?.status === 400) {
+                    alert(errorMessage);
+                } else {
+                    alert("Error subscribing to device. Try again.");
+                }
+                return;
+            }
+
+            setEmail("")
+            setTemperatureBelow("")
+            setTemperatureOver("")
+            alert(`Successfully subscribed to ${selectedDevice.name}`);
+        } catch {
+            alert("Error subscribing to device. Try again.");
+        }
     };
 
     const handleReturn = () => {
@@ -70,7 +116,7 @@ function Subscribe({ selectedDevice }) {
                 </div>
             ) : (
                 <>
-                    <p className="flex mb-10 mt-5 items-center text-gray-200 bold"> This device is event specific device  | pis Define options below: </p>
+                    <p className="flex mb-10 mt-5 items-center text-gray-200 bold"> This device is event specific device  | Define options below: </p>
                     <div className="flex mb-4 items-center">
                         <p className="text-white text-lg font-light flex-shrink-0 w-60 mr-2">Temperature goes below:</p>
                         <input
