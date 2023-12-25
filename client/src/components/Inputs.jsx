@@ -14,8 +14,8 @@ function Inputs({ devices, onSelectDevice, selectedDevice }) {
     };
 
     const redirectToPlotting = () => {
-        navigate(`/plot.html?id=${selectedDevice.id}`);
-    };
+        window.location.href = `/plot.html?id=${selectedDevice.id}`;
+    }
 
   return (
       <div className="flex flex-row justify-center my-6">
