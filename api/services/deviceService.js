@@ -91,7 +91,7 @@ const deleteDevice = async (id) => {
 const getDevicesForClient = async () => {
     try {
         const devices = await Devices.findAll({
-            attributes: ['id', 'name', 'country'],
+            attributes: ['id', 'name', 'country', 'eventsupport'],
             where: { deletedAt: null }
         });
 
