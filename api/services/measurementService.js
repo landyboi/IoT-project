@@ -21,7 +21,7 @@ const getMeasurements = async () => {
 
 const storeMeasurement = async (temperature, humidity, airpressure, dewpoint, measuredAt, device) => {
     try {
-        const measurementDevice = await Devices.findOne({ where: { uuid: device } });
+        const measurementDevice = await Devices.findOne({ where: { uuid: device, deletedAt: null } });
 
         if (!measurementDevice) {
             return { success: false, message: 'Device not found!' };
@@ -84,7 +84,7 @@ const deleteMeasurement = async (id) => {
 const getLast5MeasurementsFromDevice = async (id) => {
     try {
         const result = await Measurements.findAll({
-            where: { device: id },
+            where: { device: id, deletedAt: null },
             order: [['measuredAt', 'DESC']],
             limit: 5
         });
@@ -112,7 +112,7 @@ const getLast30DaysMeasurements = async () => {
     try {
         const date = moment().subtract(30, 'days').toDate();
         const result = await Measurements.findAll({
-            where: { createdAt: { [Op.gte]: date } },
+            where: { createdAt: { [Op.gte]: date }, deletedAt: null },
             limit: 200,
             order: [['createdAt', 'DESC']]
         });
@@ -132,7 +132,7 @@ const getLast60DaysMeasurements = async () => {
     try {
         const date = moment().subtract(60, 'days').toDate();
         const result = await Measurements.findAll({
-            where: { createdAt: { [Op.gte]: date } },
+            where: { createdAt: { [Op.gte]: date }, deletedAt: null },
             limit: 200,
             order: [['createdAt', 'DESC']]
         });
@@ -152,7 +152,7 @@ const getLast120DaysMeasurements = async () => {
     try {
         const date = moment().subtract(120, 'days').toDate();
         const result = await Measurements.findAll({
-            where: { createdAt: { [Op.gte]: date } },
+            where: { createdAt: { [Op.gte]: date }, deletedAt: null },
             limit: 200,
             order: [['createdAt', 'DESC']]
         });
@@ -171,7 +171,7 @@ const getLast120DaysMeasurements = async () => {
 const getMeasurementsByDevice = async (id) => {
     try {
         const result = await Measurements.findAll( {
-            where: { device: id},
+            where: { device: id, deletedAt: null},
             deletedAt: null
         });
 
@@ -265,7 +265,7 @@ const getMeasurementsByDeviceFromDateRange = async (id, startDate, endDate) => {
 const getLatestMeasurementByDevice = async (id) => {
     try {
         const result = await Measurements.findOne({
-            where: { device: id },
+            where: { device: id, deletedAt: null},
             order: [['measuredAt', 'DESC']]
         });
 
