@@ -30,6 +30,6 @@
     "react-router-dom": "^7.0.2",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
-    "uuid": "^10.0.0"
+    "uuid": "^11.0.3"
   }
 }
