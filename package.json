@@ -28,7 +28,7 @@
     "path": "^0.12.7",
     "process": "^0.11.10",
     "react-router-dom": "^7.1.1",
-    "sequelize": "^6.37.5",
+    "sequelize": "^6.37.6",
     "sequelize-cli": "^6.6.2",
     "uuid": "^11.0.5"
   }
