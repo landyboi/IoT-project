@@ -27,7 +27,7 @@
     "node-schedule": "^2.1.1",
     "path": "^0.12.7",
     "process": "^0.11.10",
-    "react-router-dom": "^7.1.1",
+    "react-router-dom": "^7.6.2",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
     "uuid": "^11.0.5"
